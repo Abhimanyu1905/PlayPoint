@@ -1,6 +1,6 @@
 # PlayPoints - Gaming Dashboard
 
-PlayPoints is a modern, responsive gaming dashboard built with vanilla HTML, CSS, and JavaScript. It features a dark/neon esports aesthetic, glassmorphism effects, and simulated backend functionality using `localStorage`.
+PlayPoints is a modern, responsive gaming dashboard built with vanilla HTML, CSS, and JavaScript. It features a dark/neon esports aesthetic, glassmorphism effects, and simulated backend functionality 
 
 ## 🎮 Features
 
@@ -50,13 +50,6 @@ Recommended: Use VS Code "Live Server" extension for the best experience.
 ├── admin.html          # Admin Panel
 └── database.sql        # SQL Schema for backend reference
 ```
-
-## 🌐 Deployment (Vercel)
-
-1.  Push this folder to a GitHub repository.
-2.  Go to [Vercel](https://vercel.com/) and import the project.
-3.  Vercel will automatically detect the static site.
-4.  Click **Deploy**.
 
 ## 🔐 Demo Credentials
 
