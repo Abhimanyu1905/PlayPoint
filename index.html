@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayPoints | The Ultimate Gaming Reward Platform</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Meta -->
+    <meta name="description"
+        content="Join PlayPoints to track your gaming stats, earn rewards, and climb the leaderboard.">
+</head>
+
+<body>
+
+    <div class="bg-grid"></div>
+
+    <div class="landing-wrap">
+        <div class="auth-container glass-panel animate-float">
+            <div class="logo-large text-gradient">
+                <i class='bx bxs-joystick'></i> PlayPoints
+            </div>
+
+            <p style="color: var(--text-gray); margin-bottom: 20px;">
+                Level up your gaming experience. <br> Track stats. Earn rewards.
+            </p>
+
+            <form id="loginForm" class="auth-form">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="input-field" placeholder="gamer@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Start Playing <i class='bx bx-right-arrow-alt'></i>
+                </button>
+            </form>
+
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <div class="input-group">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" class="input-field" placeholder="ProGamer123" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-email">Email Address</label>
+                    <input type="email" id="new-email" class="input-field" placeholder="gamer@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password" class="input-field" placeholder="Create a strong password"
+                        required>
+                </div>
+
+                <div class="input-group">
+                    <label for="role-select">Select Role (Demo Purpose)</label>
+                    <select id="role-select" class="input-field" style="background: rgba(0,0,0,0.5);">
+                        <option value="user">Player</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Create Account <i class='bx bx-user-plus'></i>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <p id="toSignupText">New here? <a href="#" id="toSignup">Create an account</a></p>
+                <p id="toLoginText" style="display: none;">Already have an account? <a href="#" id="toLogin">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class='bx bx-info-circle'></i>
+        <span id="toastMsg">Notification</span>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+
+</body>
+
+</html>

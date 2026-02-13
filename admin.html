@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | PlayPoints</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <!-- Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar admin-sidebar" style="border-right-color: var(--accent);">
+            <div class="brand text-gradient"
+                style="background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%); -webkit-background-clip: text;">
+                <i class='bx bxs-check-shield'></i> AdminPanel
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" onclick="switchAdminTab('overview')">
+                        <i class='bx bxs-dashboard'></i> Overview
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchAdminTab('users')">
+                        <i class='bx bxs-user-account'></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="switchAdminTab('games')">
+                        <i class='bx bxs-game'></i> Manage Games
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" onclick="logout()">
+                        <i class='bx bx-log-out'></i> Logout
+                    </a>
+                </li>
+            </ul>
+
+            <div class="user-profile-mini">
+                <div class="avatar" style="background: var(--accent);">A</div>
+                <div class="user-info">
+                    <h4>Admin</h4>
+                    <span class="text-gray" style="font-size: 0.8rem;">Superuser</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title">
+                    <h1 id="pageTitle">Admin Overview</h1>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <div id="section-overview" class="dashboard-section">
+                <div class="dashboard-grid">
+                    <div class="card card-sm">
+                        <div class="card-title">Total Users</div>
+                        <h2 class="text-gradient">1,245</h2>
+                    </div>
+                    <div class="card card-sm">
+                        <div class="card-title">Active Now</div>
+                        <h2 class="text-gradient" style="color: var(--primary);">85</h2>
+                    </div>
+                    <div class="card card-sm">
+                        <div class="card-title">Points Distributed</div>
+                        <h2 class="text-gradient" id="adminTotalPoints">0</h2>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="card card-lg">
+                        <div class="card-title">User Growth Analytics</div>
+                        <div id="adminChartContainer"
+                            style="width: 100%; height: 250px; display: flex; align-items: flex-end; justify-content: center; padding-top: 20px;">
+                            <!-- SVG Chart injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="section-users" class="dashboard-section" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        Registered Users
+                        <input type="text" placeholder="Search user..."
+                            style="background: transparent; border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 5px; color: #fff;">
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Email</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Section -->
+            <div id="section-games" class="dashboard-section" style="display: none;">
+                <div class="card card-lg">
+                    <div class="card-title">Add New Game</div>
+                    <form onsubmit="event.preventDefault(); alert('Game Added!');">
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Game Title</label>
+                            <input type="text" class="input-field" placeholder="Enter game title">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 15px;">
+                            <label>Description</label>
+                            <textarea class="input-field" placeholder="Game description"></textarea>
+                        </div>
+                        <button class="btn btn-primary">Add Game</button>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <i class='bx bx-info-circle'></i>
+        <span id="toastMsg">Notification</span>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+
+</html>
