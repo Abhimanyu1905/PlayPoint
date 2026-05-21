@@ -522,7 +522,53 @@ function showToast(msg, type = 'info') {
     }
 }
 
+/* --- Shared Game End Handler (Chess, Tetris, Pac-Man) --- */
+async function handleGameEnd(gameName, scoreVal, pointsEarned) {
+    if (pointsEarned <= 0 || !currentUserUid) {
+        showToast('Game Over! Try again to earn points.', 'info');
+        return;
+    }
+    try {
+        const userRef = doc(db, "users", currentUserUid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const newPoints = (userData.points || 0) + pointsEarned;
+            const newGamesPlayed = (userData.gamesPlayed || 0) + 1;
+            await updateDoc(userRef, { points: newPoints, gamesPlayed: newGamesPlayed });
+            currentUserData.points = newPoints;
+            currentUserData.gamesPlayed = newGamesPlayed;
+            document.getElementById('userPoints').innerText = newPoints.toLocaleString();
+            document.getElementById('totalGames').innerText = newGamesPlayed;
+            const level = Math.floor(newPoints / 1000) + 1;
+            const levelEl = document.getElementById('userLevel');
+            if (levelEl) levelEl.innerText = level;
+            const rankEl = document.getElementById('userRank');
+            let rank = 'Bronze';
+            if (newPoints >= 3000) rank = 'Platinum';
+            else if (newPoints >= 1500) rank = 'Gold';
+            else if (newPoints >= 500) rank = 'Silver';
+            if (rankEl) rankEl.innerText = rank;
+        }
+        try {
+            await addDoc(collection(db, "game_history"), {
+                userId: currentUserUid,
+                game: gameName,
+                score: scoreVal,
+                points: pointsEarned,
+                playedAt: serverTimestamp()
+            });
+        } catch (e) { console.error("History save error:", e); }
+        updateActivityTable();
+        showToast(`Game Over! You earned ${pointsEarned} PlayPoints!`, 'success');
+    } catch (e) {
+        console.error("Error updating score:", e);
+        showToast('Error saving score: ' + e.message, 'error');
+    }
+}
+
 // Global scope specifics for HTML onclick attributes
 window.switchTab = switchTab;
 window.startSnakeGame = startSnakeGame;
 window.logout = logout;
+window.onGameEnd = handleGameEnd;

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360" viewBox="0 0 600 360">
+  <rect width="600" height="360" fill="#000010"/>
+  <!-- Maze walls -->
+  <rect x="40" y="40" width="520" height="280" fill="none" stroke="#1a1aff" stroke-width="4" rx="4"/>
+  <rect x="80" y="80" width="160" height="80" fill="none" stroke="#1a1aff" stroke-width="3" rx="2"/>
+  <rect x="360" y="80" width="160" height="80" fill="none" stroke="#1a1aff" stroke-width="3" rx="2"/>
+  <rect x="80" y="200" width="160" height="80" fill="none" stroke="#1a1aff" stroke-width="3" rx="2"/>
+  <rect x="360" y="200" width="160" height="80" fill="none" stroke="#1a1aff" stroke-width="3" rx="2"/>
+  <rect x="240" y="140" width="120" height="80" fill="none" stroke="#1a1aff" stroke-width="3" rx="2"/>
+  <!-- Dots -->
+  <circle cx="70" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="110" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="150" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="190" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="230" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="370" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="410" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="450" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="490" cy="180" r="4" fill="#ffb320"/>
+  <circle cx="530" cy="180" r="4" fill="#ffb320"/>
+  <!-- Power pellets -->
+  <circle cx="70" cy="70" r="9" fill="#ffb320"/>
+  <circle cx="530" cy="70" r="9" fill="#ffb320"/>
+  <circle cx="70" cy="290" r="9" fill="#ffb320"/>
+  <circle cx="530" cy="290" r="9" fill="#ffb320"/>
+  <!-- Pacman -->
+  <path d="M 290 180 L 340 155 A 50 50 0 1 1 340 205 Z" fill="#ffb320"/>
+  <!-- Ghosts -->
+  <g transform="translate(380,155)">
+    <path d="M0,40 Q0,0 20,0 Q40,0 40,40 Q35,35 30,40 Q25,35 20,40 Q15,35 10,40 Q5,35 0,40Z" fill="#ff205f"/>
+    <circle cx="13" cy="18" r="6" fill="#fff"/><circle cx="27" cy="18" r="6" fill="#fff"/>
+    <circle cx="15" cy="20" r="3" fill="#000"/><circle cx="29" cy="20" r="3" fill="#000"/>
+  </g>
+  <g transform="translate(420,155)">
+    <path d="M0,40 Q0,0 20,0 Q40,0 40,40 Q35,35 30,40 Q25,35 20,40 Q15,35 10,40 Q5,35 0,40Z" fill="#40abf5"/>
+    <circle cx="13" cy="18" r="6" fill="#fff"/><circle cx="27" cy="18" r="6" fill="#fff"/>
+    <circle cx="15" cy="20" r="3" fill="#000"/><circle cx="29" cy="20" r="3" fill="#000"/>
+  </g>
+  <g transform="translate(460,155)">
+    <path d="M0,40 Q0,0 20,0 Q40,0 40,40 Q35,35 30,40 Q25,35 20,40 Q15,35 10,40 Q5,35 0,40Z" fill="#ff20ae"/>
+    <circle cx="13" cy="18" r="6" fill="#fff"/><circle cx="27" cy="18" r="6" fill="#fff"/>
+    <circle cx="15" cy="20" r="3" fill="#000"/><circle cx="29" cy="20" r="3" fill="#000"/>
+  </g>
+  <!-- Label -->
+  <text x="300" y="330" text-anchor="middle" font-family="Roboto,sans-serif" font-size="22" font-weight="800" fill="#ffb320">PAC-MAN ARENA</text>
+  <text x="300" y="352" text-anchor="middle" font-family="Roboto,sans-serif" font-size="12" fill="#878787">Eat dots and ghosts to earn PlayPoints</text>
+</svg>

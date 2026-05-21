@@ -168,82 +168,137 @@
                     <!-- TAB: GAMES -->
                     <!-- ========================================== -->
                     <div id="section-games" class="dashboard-section" style="display: none;">
-                        <div class="row">
-                            <!-- Neon Snake Arcade -->
-                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
-                                <div class="panel-gw text-center">
-                                    <div class="panel-title-gw justify-content-center">
-                                        <span><i class="fa fa-gamepad"></i> NEON SNAKE ARCADE</span>
-                                    </div>
 
-                                    <div class="snake-game-wrapper">
-                                        <canvas id="snakeCanvas" width="600" height="400"></canvas>
+                        <!-- Game Selector Tabs -->
+                        <div class="game-selector-tabs mb-4">
+                            <button class="game-tab-btn active" onclick="selectGame('snake')" id="tab-snake"><i class="fa fa-circle"></i> Neon Snake</button>
+                            <button class="game-tab-btn" onclick="selectGame('chess')" id="tab-chess"><i class="fa fa-th"></i> Chess</button>
+                            <button class="game-tab-btn" onclick="selectGame('tetris')" id="tab-tetris"><i class="fa fa-th-large"></i> Tetris</button>
+                            <button class="game-tab-btn" onclick="selectGame('pacman')" id="tab-pacman"><i class="fa fa-circle-o"></i> Pac-Man</button>
+                        </div>
 
-                                        <!-- Overlay Start/Game Over -->
-                                        <div id="gameOverlay" class="snake-overlay">
-                                            <h3 id="overlayTitle">READY TO RUMBLE?</h3>
-                                            <p id="overlayScore" style="display: none;">Final Score: 0</p>
-                                            <button class="site-btn" onclick="startSnakeGame()" style="border-radius: 4px; padding: 12px 30px;">
-                                                <i class="fa fa-play"></i> START ARCADE
-                                            </button>
-                                            <p style="margin-top: 15px; font-size: 13px; color: #a0a0b0;">
-                                                Use Arrow Keys (Up, Down, Left, Right) to navigate.
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-center gap-5 mt-4" style="gap: 40px;">
-                                        <div>
-                                            <span style="color: #a0a0b0; text-transform: uppercase; font-size: 12px; font-weight: 600;">Current Run Score</span>
-                                            <h2 id="currentScore" style="color: #fff; font-weight: 800; font-size: 36px; margin: 0;">0</h2>
-                                        </div>
-                                        <div>
-                                            <span style="color: #a0a0b0; text-transform: uppercase; font-size: 12px; font-weight: 600;">Estimated Reward</span>
-                                            <h2 id="currentPointsReward" style="color: var(--primary-gw); font-weight: 800; font-size: 36px; margin: 0;">0 pts</h2>
-                                        </div>
+                        <!-- ===== NEON SNAKE ===== -->
+                        <div id="game-snake" class="game-panel">
+                            <div class="panel-gw text-center">
+                                <div class="panel-title-gw justify-content-center">
+                                    <span><i class="fa fa-gamepad"></i> NEON SNAKE ARCADE</span>
+                                </div>
+                                <div class="snake-game-wrapper">
+                                    <canvas id="snakeCanvas" width="600" height="400"></canvas>
+                                    <div id="gameOverlay" class="snake-overlay">
+                                        <h3 id="overlayTitle">READY TO RUMBLE?</h3>
+                                        <p id="overlayScore" style="display:none;">Final Score: 0</p>
+                                        <button class="site-btn" onclick="startSnakeGame()" style="border-radius:4px;padding:12px 30px;">
+                                            <i class="fa fa-play"></i> START ARCADE
+                                        </button>
+                                        <p style="margin-top:15px;font-size:13px;color:#a0a0b0;">Arrow Keys to navigate.</p>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Showcase Available Games Grid -->
-                            <div class="col-12 mt-4 wow fadeInUp" data-wow-delay="0.2s">
-                                <div class="panel-title-gw">
-                                    <span><i class="fa fa-desktop"></i> Available Arena Games</span>
+                                <div class="game-stats-row">
+                                    <div><span class="game-stat-label">Score</span><h2 id="currentScore" class="game-stat-value">0</h2></div>
+                                    <div><span class="game-stat-label">PlayPoints Reward</span><h2 id="currentPointsReward" class="game-stat-value" style="color:var(--primary-gw);">0 pts</h2></div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="game-card-gw">
-                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/1.jpg');"></div>
-                                            <div class="game-card-body">
-                                                <h5>Cyber Racer</h5>
-                                                <p>High-speed futuristic racing game inside a synthwave neon skyline.</p>
-                                                <button class="site-btn btn-sm" onclick="alert('Launching Cyber Racer Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="game-card-gw">
-                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/2.jpg');"></div>
-                                            <div class="game-card-body">
-                                                <h5>Neon Strike</h5>
-                                                <p>Fast-paced strategic first person arena shooter in cyber grids.</p>
-                                                <button class="site-btn btn-sm" onclick="alert('Launching Neon Strike Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="game-card-gw">
-                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/3.jpg');"></div>
-                                            <div class="game-card-body">
-                                                <h5>Space Odyssey</h5>
-                                                <p>Epic retro-galactic galaxy shooter with rogue alien spacecrafts.</p>
-                                                <button class="site-btn btn-sm" onclick="alert('Launching Space Odyssey Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p class="game-how-to">Eat food to grow. Don't hit walls or yourself. <strong>+10 pts</strong> per food eaten.</p>
                             </div>
                         </div>
+
+                        <!-- ===== CHESS ===== -->
+                        <div id="game-chess" class="game-panel" style="display:none;">
+                            <div class="panel-gw text-center">
+                                <div class="panel-title-gw justify-content-center">
+                                    <span><i class="fa fa-th"></i> CHESS ARENA — vs AI</span>
+                                </div>
+                                <div class="chess-game-wrapper">
+                                    <canvas id="chessCanvas" width="480" height="480"></canvas>
+                                    <div id="chessOverlay" class="snake-overlay">
+                                        <h3 id="chessOverlayTitle">CHESS ARENA</h3>
+                                        <p id="chessOverlayScore" style="display:none;"></p>
+                                        <button class="site-btn" onclick="startChessGame()" style="border-radius:4px;padding:12px 30px;">
+                                            <i class="fa fa-play"></i> START GAME
+                                        </button>
+                                        <p style="margin-top:15px;font-size:13px;color:#a0a0b0;">Click a piece to select, click destination to move.</p>
+                                    </div>
+                                </div>
+                                <div class="game-stats-row">
+                                    <div><span class="game-stat-label">Status</span><h2 id="chessStatus" class="game-stat-value" style="font-size:18px;">—</h2></div>
+                                    <div><span class="game-stat-label">Score</span><h2 id="chessScore" class="game-stat-value">0</h2></div>
+                                    <div><span class="game-stat-label">PlayPoints Reward</span><h2 id="chessReward" class="game-stat-value" style="color:var(--primary-gw);">0 pts</h2></div>
+                                </div>
+                                <p class="game-how-to">You play as <strong style="color:#ffb320;">Gold (White)</strong>. Capture pieces to earn points. <strong>+50 pts</strong> per piece captured. <strong>+200 pts</strong> for checkmate.</p>
+                            </div>
+                        </div>
+
+                        <!-- ===== TETRIS ===== -->
+                        <div id="game-tetris" class="game-panel" style="display:none;">
+                            <div class="panel-gw">
+                                <div class="panel-title-gw justify-content-center">
+                                    <span><i class="fa fa-th-large"></i> TETRIS BLITZ</span>
+                                </div>
+                                <div class="tetris-layout">
+                                    <div class="tetris-board-wrap">
+                                        <canvas id="tetrisCanvas" width="300" height="600"></canvas>
+                                        <div id="tetrisOverlay" class="snake-overlay">
+                                            <h3 id="tetrisOverlayTitle">TETRIS BLITZ</h3>
+                                            <p id="tetrisOverlayScore" style="display:none;"></p>
+                                            <button class="site-btn" onclick="startTetrisGame()" style="border-radius:4px;padding:12px 30px;">
+                                                <i class="fa fa-play"></i> START GAME
+                                            </button>
+                                            <p style="margin-top:15px;font-size:13px;color:#a0a0b0;">← → Move &nbsp;|&nbsp; ↑ Rotate &nbsp;|&nbsp; ↓ Soft Drop &nbsp;|&nbsp; Space Hard Drop</p>
+                                        </div>
+                                    </div>
+                                    <div class="tetris-side-panel">
+                                        <div class="panel-gw" style="padding:20px;margin-bottom:15px;">
+                                            <div class="ti-notic" style="margin-bottom:10px;">NEXT</div>
+                                            <canvas id="tetrisNextCanvas" width="120" height="120"></canvas>
+                                        </div>
+                                        <div class="panel-gw" style="padding:20px;margin-bottom:15px;">
+                                            <div class="ti-notic" style="margin-bottom:8px;">SCORE</div>
+                                            <h3 id="tetrisScore" style="color:#fff;font-size:28px;margin:0;">0</h3>
+                                        </div>
+                                        <div class="panel-gw" style="padding:20px;margin-bottom:15px;">
+                                            <div class="ti-notic" style="margin-bottom:8px;">LINES</div>
+                                            <h3 id="tetrisLines" style="color:#fff;font-size:28px;margin:0;">0</h3>
+                                        </div>
+                                        <div class="panel-gw" style="padding:20px;margin-bottom:15px;">
+                                            <div class="ti-notic" style="margin-bottom:8px;">LEVEL</div>
+                                            <h3 id="tetrisLevel" style="color:#fff;font-size:28px;margin:0;">1</h3>
+                                        </div>
+                                        <div class="panel-gw" style="padding:20px;">
+                                            <div class="ti-notic" style="margin-bottom:8px;">REWARD</div>
+                                            <h3 id="tetrisReward" style="color:var(--primary-gw);font-size:22px;margin:0;">0 pts</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="game-how-to text-center" style="margin-top:15px;"><strong>+10 pts</strong> single line &nbsp;|&nbsp; <strong>+30 pts</strong> double &nbsp;|&nbsp; <strong>+60 pts</strong> triple &nbsp;|&nbsp; <strong>+120 pts</strong> Tetris</p>
+                            </div>
+                        </div>
+
+                        <!-- ===== PAC-MAN ===== -->
+                        <div id="game-pacman" class="game-panel" style="display:none;">
+                            <div class="panel-gw text-center">
+                                <div class="panel-title-gw justify-content-center">
+                                    <span><i class="fa fa-circle-o"></i> PAC-MAN ARENA</span>
+                                </div>
+                                <div class="pacman-game-wrapper">
+                                    <canvas id="pacCanvas"></canvas>
+                                    <div id="pacOverlay" class="snake-overlay">
+                                        <h3 id="pacOverlayTitle">PAC-MAN ARENA</h3>
+                                        <p id="pacOverlayScore" style="display:none;"></p>
+                                        <button class="site-btn" onclick="startPacmanGame()" style="border-radius:4px;padding:12px 30px;">
+                                            <i class="fa fa-play"></i> START GAME
+                                        </button>
+                                        <p style="margin-top:15px;font-size:13px;color:#a0a0b0;">Arrow Keys to move Pac-Man.</p>
+                                    </div>
+                                </div>
+                                <div class="game-stats-row">
+                                    <div><span class="game-stat-label">Score</span><h2 id="pacScore" class="game-stat-value">0</h2></div>
+                                    <div><span class="game-stat-label">Lives</span><h2 id="pacLives" class="game-stat-value">❤❤❤</h2></div>
+                                    <div><span class="game-stat-label">PlayPoints Reward</span><h2 id="pacReward" class="game-stat-value" style="color:var(--primary-gw);">0 pts</h2></div>
+                                </div>
+                                <p class="game-how-to"><strong>+1 pt</strong> per dot &nbsp;|&nbsp; <strong>+5 pts</strong> power pellet &nbsp;|&nbsp; <strong>+20 pts</strong> per ghost eaten</p>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- ========================================== -->
@@ -306,6 +361,19 @@
 
     <!-- Firebase Dynamic Dashboard Logic -->
     <script type="module" src="js/dashboard.js"></script>
+    <!-- Game Scripts -->
+    <script src="js/chess.js"></script>
+    <script src="js/tetris.js"></script>
+    <script src="js/pacman.js"></script>
+    <script>
+        function selectGame(name) {
+            ['snake','chess','tetris','pacman'].forEach(g => {
+                document.getElementById('game-'+g).style.display = g===name ? 'block' : 'none';
+                document.getElementById('tab-'+g).classList.toggle('active', g===name);
+            });
+        }
+        window.selectGame = selectGame;
+    </script>
 </body>
 
 </html>

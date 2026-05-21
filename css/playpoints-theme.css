@@ -538,3 +538,133 @@
         padding: 30px 20px;
     }
 }
+
+/* ====================================================
+   GAME ARENA — MULTI-GAME UI STYLES
+   ==================================================== */
+
+/* Game selector tab buttons */
+.game-selector-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 2px solid var(--primary-gw);
+    padding-bottom: 15px;
+}
+
+.game-tab-btn {
+    background: #252525;
+    border: 1px solid var(--border-gw);
+    color: #fff;
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 0;
+}
+
+.game-tab-btn:hover,
+.game-tab-btn.active {
+    background: var(--primary-gw);
+    color: #131313;
+    border-color: var(--primary-gw);
+}
+
+/* Game stats row below canvas */
+.game-stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.game-stat-label {
+    color: #a0a0b0;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.game-stat-value {
+    color: #fff;
+    font-weight: 800;
+    font-size: 32px;
+    margin: 0;
+}
+
+.game-how-to {
+    color: #878787;
+    font-size: 13px;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+/* Chess canvas wrapper */
+.chess-game-wrapper {
+    position: relative;
+    display: inline-block;
+    border: 2px solid var(--primary-gw);
+    max-width: 100%;
+}
+
+.chess-game-wrapper canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tetris layout */
+.tetris-layout {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.tetris-board-wrap {
+    position: relative;
+    border: 2px solid var(--primary-gw);
+    display: inline-block;
+}
+
+.tetris-board-wrap canvas {
+    display: block;
+    max-width: 100%;
+}
+
+.tetris-side-panel {
+    min-width: 140px;
+}
+
+/* Pac-Man canvas wrapper */
+.pacman-game-wrapper {
+    position: relative;
+    display: inline-block;
+    border: 2px solid var(--primary-gw);
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pacman-game-wrapper canvas {
+    display: block;
+    max-width: 100%;
+}
+
+/* Responsive game canvases */
+@media only screen and (max-width: 767px) {
+    .game-selector-tabs { gap: 6px; }
+    .game-tab-btn { padding: 8px 12px; font-size: 11px; }
+    .game-stats-row { gap: 20px; }
+    .game-stat-value { font-size: 22px; }
+    .tetris-layout { flex-direction: column; align-items: center; }
+    .tetris-side-panel { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+    .tetris-side-panel .panel-gw { flex: 1; min-width: 80px; padding: 12px; margin-bottom: 0; }
+}
