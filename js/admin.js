@@ -13,6 +13,7 @@ import {
     collection,
     getDocs,
     doc,
+    getDoc,
     updateDoc,
     deleteDoc,
     query,
@@ -22,12 +23,23 @@ import {
 let allUsers = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // detailed admin check should happen via custom claims or firestore role
-            // For now, we rely on the client-side role check we did in auth.js before redirect
-            // But let's verify again
-            loadAdminData();
+            try {
+                // Verify the user's role from Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists() && userDocSnap.data().role === 'admin') {
+                    loadAdminData();
+                } else {
+                    alert("Unauthorized access! Redirecting to player dashboard...");
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                console.error("Auth check failed:", error);
+                window.location.href = 'index.html';
+            }
         } else {
             window.location.href = 'index.html';
         }

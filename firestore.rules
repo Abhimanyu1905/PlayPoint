@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Check if authenticated user is an admin
+    function isAdmin() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /users/{userId} {
+      // Any authenticated user can read or write (create/update) their own document
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+      
+      // Admin has full control
+      allow read, write, delete: if isAdmin();
+      
+      // All authenticated players can view other profiles (required for the global leaderboard)
+      allow read: if isSignedIn();
+    }
+    
+    match /game_history/{historyId} {
+      // Authenticated users can log their own gameplay scores
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      
+      // Authenticated users can view their own gameplay history
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      // Admin can view all gameplay history
+      allow read: if isAdmin();
+    }
+  }
+}
