@@ -6,6 +6,7 @@ import {
     persistentLocalCache,
     persistentMultipleTabManager
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://firebase.google.com/docs/web/learn-more#config-object
@@ -31,3 +32,7 @@ const db = initializeFirestore(app, {
 });
 
 export { auth, db };
+
+// Initialize Firebase Storage
+const storage = getStorage(app);
+export { storage };

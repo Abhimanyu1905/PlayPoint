@@ -62,9 +62,18 @@
                 <div class="col-lg-3">
                     <div class="dashboard-sidebar wow fadeInUp" data-wow-delay="0.1s">
                         <div class="user-profile-header">
-                            <div class="user-avatar-gw" id="userAvatar">U</div>
+                            <!-- Avatar with upload trigger -->
+                            <div class="avatar-upload-wrap" onclick="document.getElementById('avatarFileInput').click()" title="Click to change profile picture">
+                                <div class="user-avatar-gw" id="userAvatar">U</div>
+                                <div class="avatar-upload-overlay"><i class="fa fa-camera"></i></div>
+                            </div>
+                            <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+                            <div id="avatarUploadProgress" style="display:none; margin:8px 0;">
+                                <div class="avatar-progress-bar"><div class="avatar-progress-fill" id="avatarProgressFill"></div></div>
+                                <span style="color:#a0a0b0;font-size:11px;">Uploading...</span>
+                            </div>
                             <h4 id="userNameDisplay">Gamer</h4>
-                            <p>Rank: <span id="userRank" style="color: var(--primary-gw);">Silver</span></p>
+                            <p>Rank: <span id="userRank" style="color: var(--primary-gw);">Bronze</span></p>
                         </div>
                         <ul class="dashboard-menu">
                             <li><a href="#" id="menu-overview" class="active" onclick="switchTab('overview')"><i class="fa fa-th-large"></i> Overview</a></li>
@@ -115,8 +124,8 @@
                         <div class="col-md-4 col-sm-12 wow fadeInUp" data-wow-delay="0.4s">
                             <div class="metric-card">
                                 <div class="ti-notic">Next Rank</div>
-                                <h3 style="color: #cd7f32;">GOLD</h3>
-                                <p>500 Points Required</p>
+                                <h3 id="nextRankName" style="color:#cd7f32;">GOLD</h3>
+                                <p id="nextRankPts">500 Points Required</p>
                             </div>
                         </div>
                     </div>
@@ -317,6 +326,7 @@
                                                 <tr>
                                                     <th>Rank</th>
                                                     <th>Player</th>
+                                                    <th>Rank Title</th>
                                                     <th>Level</th>
                                                     <th>Total Points</th>
                                                 </tr>

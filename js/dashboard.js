@@ -1,10 +1,13 @@
 /* 
 ====================================================================
    PLAYPOINTS - DASHBOARD LOGIC
+   - Real-time leaderboard with avatars
+   - Profile picture upload to Firebase Storage
+   - Live stats (points, rank, level)
 ====================================================================
 */
 
-import { auth, db } from './firebase-config.js';
+import { auth, db, storage } from './firebase-config.js';
 import {
     onAuthStateChanged,
     signOut
@@ -21,33 +24,72 @@ import {
     addDoc,
     serverTimestamp,
     where,
-    onSnapshot
+    onSnapshot,
+    getCountFromServer
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import {
+    ref,
+    uploadBytesResumable,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 let currentUserData = null;
 let currentUserUid = null;
 
+/* ============================================================
+   RANK SYSTEM (consistent across the whole app)
+   ============================================================ */
+function getRankInfo(points) {
+    if (points >= 10000) return { name: 'Legend',   color: '#ff205f',  icon: '★' };
+    if (points >= 5000)  return { name: 'Diamond',  color: '#694eae',  icon: '◆' };
+    if (points >= 2000)  return { name: 'Gold',     color: '#ffb320',  icon: '⬡' };
+    if (points >= 500)   return { name: 'Silver',   color: '#aaaaaa',  icon: '⬡' };
+    return                      { name: 'Bronze',   color: '#cd7f32',  icon: '⬡' };
+}
+
+/* ============================================================
+   AVATAR HELPERS
+   ============================================================ */
+function setAvatarEl(el, photoURL, username) {
+    if (!el) return;
+    if (photoURL) {
+        el.style.backgroundImage = `url('${photoURL}')`;
+        el.style.backgroundSize = 'cover';
+        el.style.backgroundPosition = 'center';
+        el.innerText = '';
+    } else {
+        el.style.backgroundImage = '';
+        el.innerText = (username || 'U').charAt(0).toUpperCase();
+    }
+}
+
+function makeAvatarHTML(photoURL, username, size = 36) {
+    if (photoURL) {
+        return `<img src="${photoURL}" alt="${username}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ffb320;">`;
+    }
+    const initial = (username || '?').charAt(0).toUpperCase();
+    return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ffb320;color:#131313;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:${Math.floor(size*0.45)}px;border:2px solid #ffb320;">${initial}</div>`;
+}
+
+/* ============================================================
+   AUTH + INIT
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-    // Auth Check
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserUid = user.uid;
-            // Load User Data
             const docRef = doc(db, "users", user.uid);
             const docSnap = await getDoc(docRef);
-
             if (docSnap.exists()) {
                 currentUserData = docSnap.data();
                 loadDashboardData();
-                setupEventListeners();
-
-                // Initialize Snake Game Global
+                setupAvatarUpload();
                 window.startSnakeGame = startSnakeGame;
                 window.logout = logout;
                 window.switchTab = switchTab;
+                window.onGameEnd = handleGameEnd;
             } else {
                 console.error("No user data found!");
-                // Handle missing data or redirect
             }
         } else {
             window.location.href = 'index.html';
@@ -55,474 +97,299 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
+/* ============================================================
+   LOAD DASHBOARD DATA
+   ============================================================ */
 function loadDashboardData() {
-    // User Info
-    document.getElementById('userNameDisplay').innerText = currentUserData.username;
-    document.getElementById('welcomeName').innerText = currentUserData.username;
-    document.getElementById('userAvatar').innerText = currentUserData.username.charAt(0).toUpperCase();
-
-    // Stats
     const points = currentUserData.points || 0;
-    document.getElementById('userPoints').innerText = points.toLocaleString();
-    document.getElementById('totalGames').innerText = currentUserData.gamesPlayed || 0;
-
-    // Dynamically calculate level & rank
+    const rank = getRankInfo(points);
     const level = Math.floor(points / 1000) + 1;
+
+    // Sidebar
+    document.getElementById('userNameDisplay').innerText = currentUserData.username;
+    setAvatarEl(document.getElementById('userAvatar'), currentUserData.photoURL, currentUserData.username);
+    const rankEl = document.getElementById('userRank');
+    if (rankEl) { rankEl.innerText = rank.name; rankEl.style.color = rank.color; }
+
+    // Header welcome
+    const welcomeEl = document.getElementById('welcomeName');
+    if (welcomeEl) welcomeEl.innerText = currentUserData.username;
+
+    // Points badge
+    const pointsEl = document.getElementById('userPoints');
+    if (pointsEl) pointsEl.innerText = points.toLocaleString();
+
+    // Metric cards
+    const totalGamesEl = document.getElementById('totalGames');
+    if (totalGamesEl) totalGamesEl.innerText = currentUserData.gamesPlayed || 0;
     const levelEl = document.getElementById('userLevel');
     if (levelEl) levelEl.innerText = level;
 
-    const rankEl = document.getElementById('userRank');
-    let rank = 'Bronze';
-    if (points >= 3000) rank = 'Platinum';
-    else if (points >= 1500) rank = 'Gold';
-    else if (points >= 500) rank = 'Silver';
-    if (rankEl) rankEl.innerText = rank;
+    // Next rank card
+    const nextRankEl = document.getElementById('nextRankName');
+    const nextRankPtsEl = document.getElementById('nextRankPts');
+    const nextRankMap = [
+        { threshold: 500,   name: 'Silver',  color: '#aaaaaa' },
+        { threshold: 2000,  name: 'Gold',    color: '#ffb320' },
+        { threshold: 5000,  name: 'Diamond', color: '#694eae' },
+        { threshold: 10000, name: 'Legend',  color: '#ff205f' },
+    ];
+    const next = nextRankMap.find(r => points < r.threshold);
+    if (nextRankEl && next) { nextRankEl.innerText = next.name; nextRankEl.style.color = next.color; }
+    else if (nextRankEl) { nextRankEl.innerText = 'MAX'; nextRankEl.style.color = '#ff205f'; }
+    if (nextRankPtsEl && next) nextRankPtsEl.innerText = `${(next.threshold - points).toLocaleString()} pts to go`;
+    else if (nextRankPtsEl) nextRankPtsEl.innerText = 'You are at the top!';
 
-    // Load History
     updateActivityTable();
-    renderPointsChart(); // Keep mock or implement sub-collection for history
+    renderPointsChart();
     loadLeaderboard();
 }
 
+/* ============================================================
+   PROFILE PICTURE UPLOAD
+   ============================================================ */
+function setupAvatarUpload() {
+    const input = document.getElementById('avatarFileInput');
+    if (!input) return;
+
+    input.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate: image, max 5MB
+        if (!file.type.startsWith('image/')) { showToast('Please select an image file.', 'error'); return; }
+        if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB.', 'error'); return; }
+
+        const progressWrap = document.getElementById('avatarUploadProgress');
+        const progressFill = document.getElementById('avatarProgressFill');
+        if (progressWrap) progressWrap.style.display = 'block';
+
+        try {
+            const storageRef = ref(storage, `avatars/${currentUserUid}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    if (progressFill) progressFill.style.width = pct + '%';
+                },
+                (error) => {
+                    console.error('Upload error:', error);
+                    showToast('Upload failed: ' + error.message, 'error');
+                    if (progressWrap) progressWrap.style.display = 'none';
+                },
+                async () => {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
+                    // Save to Firestore
+                    await updateDoc(doc(db, "users", currentUserUid), { photoURL: downloadURL });
+                    currentUserData.photoURL = downloadURL;
+
+                    // Update avatar in UI
+                    setAvatarEl(document.getElementById('userAvatar'), downloadURL, currentUserData.username);
+
+                    if (progressWrap) progressWrap.style.display = 'none';
+                    showToast('Profile picture updated!', 'success');
+
+                    // Reset input so same file can be re-selected
+                    input.value = '';
+                }
+            );
+        } catch (err) {
+            console.error(err);
+            showToast('Upload error: ' + err.message, 'error');
+            if (progressWrap) progressWrap.style.display = 'none';
+        }
+    });
+}
+
+/* ============================================================
+   LEADERBOARD — real-time with avatars + rank titles
+   ============================================================ */
 let leaderboardUnsubscribe = null;
 
 function loadLeaderboard() {
-    // Prevent multiple listeners
-    if (leaderboardUnsubscribe) {
-        return;
-    }
+    if (leaderboardUnsubscribe) return;
 
     const tableBody = document.querySelector('#leaderboardTable tbody');
     if (!tableBody) return;
 
     try {
         const usersRef = collection(db, "users");
-        const q = query(usersRef, orderBy("points", "desc"), limit(20)); // Increased limit to ensure we get enough users after filtering
+        const q = query(usersRef, orderBy("points", "desc"), limit(25));
 
         leaderboardUnsubscribe = onSnapshot(q, (querySnapshot) => {
-            tableBody.innerHTML = ''; // Clear existing
+            tableBody.innerHTML = '';
 
             const users = [];
-            querySnapshot.forEach((doc) => {
-                users.push(doc.data());
-            });
+            querySnapshot.forEach((d) => users.push({ id: d.id, ...d.data() }));
 
-            // Filter: Users only see other Users (Hide Admins)
-            const validUsers = users.filter(u => u.role !== 'admin').slice(0, 10);
+            const validUsers = users.filter(u => u.role !== 'admin').slice(0, 15);
 
             if (validUsers.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: #888;">No players yet. Be the first!</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;">No players yet. Be the first!</td></tr>';
                 return;
             }
 
             validUsers.forEach((user, index) => {
-                const rank = index + 1;
-                let rankBadge = rank;
-
-                if (rank === 1) rankBadge = `<div class="rank-badge rank-1">1</div>`;
-                else if (rank === 2) rankBadge = `<div class="rank-badge rank-2">2</div>`;
-                else if (rank === 3) rankBadge = `<div class="rank-badge rank-3">3</div>`;
+                const pos = index + 1;
+                let rankBadge;
+                if (pos === 1) rankBadge = `<div class="rank-badge rank-1">1</div>`;
+                else if (pos === 2) rankBadge = `<div class="rank-badge rank-2">2</div>`;
+                else if (pos === 3) rankBadge = `<div class="rank-badge rank-3">3</div>`;
+                else rankBadge = `<span style="color:#878787;font-weight:700;">${pos}</span>`;
 
                 const level = Math.floor((user.points || 0) / 1000) + 1;
-                const isCurrentUser = user.email === currentUserData.email;
+                const rankInfo = getRankInfo(user.points || 0);
+                const isCurrentUser = user.id === currentUserUid;
+                const avatarHTML = makeAvatarHTML(user.photoURL, user.username, 36);
 
                 const row = `
                     <tr class="${isCurrentUser ? 'highlight-row' : ''}">
-                        <td>${rankBadge}</td>
-                        <td>${user.username} ${isCurrentUser ? '(You)' : ''}</td>
+                        <td style="text-align:center;">${rankBadge}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                ${avatarHTML}
+                                <span>${user.username}${isCurrentUser ? ' <span style="color:#ffb320;font-size:11px;">(You)</span>' : ''}</span>
+                            </div>
+                        </td>
+                        <td><span style="color:${rankInfo.color};font-weight:700;">${rankInfo.name}</span></td>
                         <td>${level}</td>
-                        <td class="text-gradient">${(user.points || 0).toLocaleString()}</td>
+                        <td style="color:#ffb320;font-weight:700;">${(user.points || 0).toLocaleString()}</td>
                     </tr>
                 `;
                 tableBody.insertAdjacentHTML('beforeend', row);
             });
         }, (error) => {
-            console.error("Error getting leaderboard updates: ", error);
+            console.error("Leaderboard error:", error);
         });
-
     } catch (e) {
-        console.error("Error setting up leaderboard listener: ", e);
+        console.error("Leaderboard setup error:", e);
     }
 }
 
+/* ============================================================
+   POINTS CHART
+   ============================================================ */
 function renderPointsChart() {
     const container = document.getElementById('pointsChartContainer');
-    // Mock Data for visualization as we don't store historical points snapshots in this simple schema
+    if (!container) return;
     const currentPoints = currentUserData.points || 0;
-    const data = [
-        currentPoints * 0.5,
-        currentPoints * 0.6,
-        currentPoints * 0.55,
-        currentPoints * 0.75,
-        currentPoints * 0.85,
-        currentPoints * 0.95,
-        currentPoints
-    ].map(x => Math.floor(x));
-
+    const data = [0.5,0.6,0.55,0.75,0.85,0.95,1].map(x => Math.floor(x * currentPoints));
+    const labels = ['6d ago','5d ago','4d ago','3d ago','2d ago','Yesterday','Today'];
     const max = Math.max(...data, 100) * 1.2;
-    const width = container.offsetWidth;
-    const height = 250;
-
-    // Generate SVG points
-    let points = '';
+    const width = container.offsetWidth || 600;
+    const height = 230;
     const stepX = width / (data.length - 1);
 
-    data.forEach((val, index) => {
-        const x = index * stepX;
+    let polyPoints = '';
+    let areaPoints = `0,${height} `;
+    data.forEach((val, i) => {
+        const x = i * stepX;
         const y = height - ((val / max) * height);
-        points += `${x},${y} `;
+        polyPoints += `${x},${y} `;
+        areaPoints += `${x},${y} `;
     });
+    areaPoints += `${(data.length-1)*stepX},${height}`;
 
-    // Create SVG string
-    const svgHTML = `
-        <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+    const dots = data.map((val, i) => {
+        const x = i * stepX;
+        const y = height - ((val / max) * height);
+        return `<circle cx="${x}" cy="${y}" r="5" fill="#ffb320" stroke="#131313" stroke-width="2"/>
+                <title>${labels[i]}: ${val.toLocaleString()} pts</title>`;
+    }).join('');
+
+    container.innerHTML = `
+        <svg width="100%" height="${height+30}" viewBox="0 0 ${width} ${height+30}" preserveAspectRatio="none">
             <defs>
-                <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#ffb320;stop-opacity:0.5" />
-                    <stop offset="100%" style="stop-color:#ffb320;stop-opacity:0" />
+                <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffb320;stop-opacity:0.4"/>
+                    <stop offset="100%" style="stop-color:#ffb320;stop-opacity:0"/>
                 </linearGradient>
             </defs>
-            <polyline points="${points}" fill="url(#grad)" stroke="#ffb320" stroke-width="3"/>
-            <circle cx="${(data.length - 1) * stepX}" cy="${height - ((data[data.length - 1] / max) * height)}" r="6" fill="#fff" stroke="#ffb320" stroke-width="2" />
-        </svg>
-    `;
-
-    container.innerHTML = svgHTML;
+            <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
+            <polyline points="${polyPoints}" fill="none" stroke="#ffb320" stroke-width="2.5"/>
+            ${dots}
+            ${labels.map((l,i)=>`<text x="${i*stepX}" y="${height+20}" text-anchor="middle" font-size="10" fill="#878787">${l}</text>`).join('')}
+        </svg>`;
 }
 
+/* ============================================================
+   ACTIVITY TABLE
+   ============================================================ */
 async function updateActivityTable() {
     const tableBody = document.getElementById('activityTable');
     if (!tableBody) return;
     tableBody.innerHTML = '';
 
-    // Fetch recent games
     try {
         const gamesRef = collection(db, "game_history");
-        // Using client-side filter and sort to avoid complex index requirements for now
-        // Ideally: orderBy("playedAt", "desc") with composite index
         const q = query(gamesRef, where("userId", "==", currentUserUid));
         const querySnapshot = await getDocs(q);
 
         const games = [];
-        querySnapshot.forEach((doc) => {
-            games.push(doc.data());
-        });
+        querySnapshot.forEach((d) => games.push(d.data()));
+        games.sort((a, b) => getJsDate(b.playedAt) - getJsDate(a.playedAt));
+        const recent = games.slice(0, 8);
 
-        // Client-side Sort
-        games.sort((a, b) => {
-            const dateA = getJsDate(a.playedAt);
-            const dateB = getJsDate(b.playedAt);
-            return dateB - dateA; // Descending
-        });
+        if (recent.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;">No games played yet. Head to the Games tab!</td></tr>';
+            return;
+        }
 
-        const recentGames = games.slice(0, 5);
-
-        recentGames.forEach(game => {
-            const dateStr = getRelativeTime(game.playedAt);
-
+        recent.forEach(game => {
             const row = `
                 <tr>
                     <td>${game.game}</td>
                     <td>${Number(game.score).toLocaleString()}</td>
-                    <td>${dateStr}</td>
-                    <td class="text-gradient">+${game.points}</td>
-                </tr>
-            `;
+                    <td>${getRelativeTime(game.playedAt)}</td>
+                    <td style="color:#ffb320;font-weight:700;">+${game.points}</td>
+                </tr>`;
             tableBody.insertAdjacentHTML('beforeend', row);
         });
-
     } catch (e) {
-        console.error("Error loading activity:", e);
+        console.error("Activity load error:", e);
     }
 }
 
-function getJsDate(timestamp) {
-    if (!timestamp) return 0;
-    if (timestamp.toDate) return timestamp.toDate(); // Firestore Timestamp
-    return new Date(timestamp); // Date string or number
+function getJsDate(ts) {
+    if (!ts) return 0;
+    if (ts.toDate) return ts.toDate();
+    return new Date(ts);
 }
 
-function getRelativeTime(timestamp) {
-    if (!timestamp) return 'Just now';
-    const date = getJsDate(timestamp);
-    const now = new Date();
-    const diff = now - date;
-
-    // Simple relative time
-    const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} mins ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} hours ago`;
-    return date.toLocaleDateString();
+function getRelativeTime(ts) {
+    if (!ts) return 'Just now';
+    const diff = Date.now() - getJsDate(ts);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return getJsDate(ts).toLocaleDateString();
 }
 
-/* --- Actions --- */
-
+/* ============================================================
+   TAB SWITCHING
+   ============================================================ */
 function switchTab(tabId) {
-    // Hide all sections
-    document.querySelectorAll('.dashboard-section').forEach(section => {
-        section.style.display = 'none';
+    document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
+    const section = document.getElementById(`section-${tabId}`);
+    if (section) section.style.display = 'block';
+
+    document.querySelectorAll('.dashboard-menu li a').forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(tabId)) a.classList.add('active');
     });
 
-    // Show selected
-    document.getElementById(`section-${tabId}`).style.display = 'block';
-
-    // Update Sidebar Active State
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(tabId)) {
-            link.classList.add('active');
-        }
-    });
-
-    // Update Title
-    const titles = {
-        'overview': 'Dashboard',
-        'games': 'Available Games',
-        'leaderboard': 'Global Leaderboard'
-    };
-    document.getElementById('pageTitle').innerText = titles[tabId];
+    const titles = { overview: 'Dashboard', games: 'Game Arena', leaderboard: 'Global Leaderboard' };
+    const titleEl = document.getElementById('pageTitle');
+    if (titleEl) titleEl.innerText = titles[tabId] || 'Dashboard';
 }
 
-/* --- Snake Game Logic --- */
-
-let canvas, ctx;
-let snake = [];
-let food = {};
-let direction = 'RIGHT';
-let gameInterval;
-let gameRunning = false;
-let score = 0;
-const boxSize = 20;
-
-function startSnakeGame() {
-    canvas = document.getElementById('snakeCanvas');
-    ctx = canvas.getContext('2d');
-
-    // Reset Game State
-    snake = [{ x: 10 * boxSize, y: 10 * boxSize }];
-    direction = 'RIGHT';
-    score = 0;
-    gameRunning = true;
-
-    document.getElementById('currentScore').innerText = '0';
-    const rewardEl = document.getElementById('currentPointsReward');
-    if (rewardEl) rewardEl.innerText = '0 pts';
-    document.getElementById('gameOverlay').style.display = 'none';
-
-    generateFood();
-
-    if (gameInterval) clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 100);
-
-    // Focus for keyboard events
-    window.addEventListener('keydown', changeDirection);
-}
-
-function changeDirection(event) {
-    if (!gameRunning) return;
-
-    const key = event.keyCode;
-    // Prevent default scrolling for arrow keys
-    if ([37, 38, 39, 40].indexOf(key) > -1) {
-        event.preventDefault();
-    }
-
-    if (key === 37 && direction !== 'RIGHT') direction = 'LEFT';
-    else if (key === 38 && direction !== 'DOWN') direction = 'UP';
-    else if (key === 39 && direction !== 'LEFT') direction = 'RIGHT';
-    else if (key === 40 && direction !== 'UP') direction = 'DOWN';
-}
-
-function gameLoop() {
-    // Move Snake
-    let headX = snake[0].x;
-    let headY = snake[0].y;
-
-    if (direction === 'LEFT') headX -= boxSize;
-    if (direction === 'UP') headY -= boxSize;
-    if (direction === 'RIGHT') headX += boxSize;
-    if (direction === 'DOWN') headY += boxSize;
-
-    // Check Collision (Walls)
-    if (headX < 0 || headX >= canvas.width || headY < 0 || headY >= canvas.height) {
-        gameOver();
-        return;
-    }
-
-    // Check Collision (Self)
-    for (let i = 0; i < snake.length; i++) {
-        if (headX === snake[i].x && headY === snake[i].y) {
-            gameOver();
-            return;
-        }
-    }
-
-    // Check Food
-    if (headX === food.x && headY === food.y) {
-        score += 10;
-        document.getElementById('currentScore').innerText = score;
-        const rewardEl = document.getElementById('currentPointsReward');
-        if (rewardEl) rewardEl.innerText = `${score} pts`;
-        generateFood();
-    } else {
-        snake.pop(); // Remove tail
-    }
-
-    const newHead = { x: headX, y: headY };
-    snake.unshift(newHead);
-
-    drawGame();
-}
-
-function drawGame() {
-    // Clear Canvas
-    ctx.fillStyle = '#0f0f0f'; // Dark charcoal background
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw Food
-    ctx.fillStyle = '#ff205f'; // Crimson Red
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = '#ff205f';
-    ctx.fillRect(food.x, food.y, boxSize, boxSize);
-    ctx.shadowBlur = 0;
-
-    // Draw Snake
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? '#ffb320' : '#cc8f1a'; // Head: Gold, Body: Darker Gold
-        ctx.shadowBlur = i === 0 ? 15 : 0;
-        ctx.shadowColor = '#ffb320';
-        ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
-
-        ctx.strokeStyle = '#131313';
-        ctx.strokeRect(snake[i].x, snake[i].y, boxSize, boxSize);
-    }
-}
-
-function generateFood() {
-    food = {
-        x: Math.floor(Math.random() * (canvas.width / boxSize)) * boxSize,
-        y: Math.floor(Math.random() * (canvas.height / boxSize)) * boxSize
-    };
-
-    // Ensure food doesn't spawn on snake
-    for (let part of snake) {
-        if (part.x === food.x && part.y === food.y) {
-            generateFood();
-        }
-    }
-}
-
-async function gameOver() {
-    clearInterval(gameInterval);
-    gameRunning = false;
-
-    // Update Overlay
-    document.getElementById('overlayTitle').innerText = 'Game Over';
-    document.getElementById('overlayScore').innerText = `Final Score: ${score}`;
-    document.getElementById('overlayScore').style.display = 'block';
-    document.getElementById('gameOverlay').style.display = 'flex';
-
-    // Calculate Reward Points (1 point per 1 score)
-    const pointsEarned = score;
-
-    if (pointsEarned > 0 && currentUserUid) {
-        try {
-            const userRef = doc(db, "users", currentUserUid);
-
-            // Re-fetch strictly to be safe for atomic-like update
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                const newPoints = (userData.points || 0) + pointsEarned;
-                const newGamesPlayed = (userData.gamesPlayed || 0) + 1;
-
-                await updateDoc(userRef, {
-                    points: newPoints,
-                    gamesPlayed: newGamesPlayed
-                });
-
-                // Update Local Data
-                currentUserData.points = newPoints;
-                currentUserData.gamesPlayed = newGamesPlayed;
-
-                // Update Dashboard UI
-                document.getElementById('userPoints').innerText = newPoints.toLocaleString();
-                document.getElementById('totalGames').innerText = newGamesPlayed;
-                
-                // Update dynamically calculated level & rank
-                const level = Math.floor(newPoints / 1000) + 1;
-                const levelEl = document.getElementById('userLevel');
-                if (levelEl) levelEl.innerText = level;
-
-                const rankEl = document.getElementById('userRank');
-                let rank = 'Bronze';
-                if (newPoints >= 3000) rank = 'Platinum';
-                else if (newPoints >= 1500) rank = 'Gold';
-                else if (newPoints >= 500) rank = 'Silver';
-                if (rankEl) rankEl.innerText = rank;
-            }
-
-            // Log History
-            try {
-                await addDoc(collection(db, "game_history"), {
-                    userId: currentUserUid,
-                    game: "Neon Snake",
-                    score: score,
-                    points: pointsEarned,
-                    playedAt: serverTimestamp()
-                });
-            } catch (historyError) {
-                console.error("Error saving history:", historyError);
-                // Don't fail the whole flow if history fails
-            }
-
-            // Update Activity Table UI
-            updateActivityTable(); // Refresh table from DB (or append manually for instant feedback)
-
-            showToast(`Game Over! You earned ${pointsEarned} PlayPoints!`, 'success');
-
-        } catch (e) {
-            console.error("Error updating score:", e);
-            showToast('Error saving score: ' + e.message, 'error');
-        }
-
-    } else {
-        showToast('Game Over! Try again to earn points.', 'info');
-    }
-}
-
-function logout() {
-    signOut(auth).then(() => {
-        window.location.href = 'index.html';
-    }).catch((error) => {
-        console.error("Sign out error", error);
-    });
-}
-
-function setupEventListeners() {
-    // Add any specific listeners here
-}
-
-/* --- Utils --- */
-function showToast(msg, type = 'info') {
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toastMsg');
-
-    if (toast && toastMsg) {
-        toastMsg.innerText = msg;
-        toast.style.borderColor = type === 'error' ? '#ff205f' : '#ffb320';
-        toast.classList.add('show');
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
-    }
-}
-
-/* --- Shared Game End Handler (Chess, Tetris, Pac-Man) --- */
+/* ============================================================
+   SHARED GAME END HANDLER
+   ============================================================ */
 async function handleGameEnd(gameName, scoreVal, pointsEarned) {
     if (pointsEarned <= 0 || !currentUserUid) {
         showToast('Game Over! Try again to earn points.', 'info');
@@ -538,18 +405,21 @@ async function handleGameEnd(gameName, scoreVal, pointsEarned) {
             await updateDoc(userRef, { points: newPoints, gamesPlayed: newGamesPlayed });
             currentUserData.points = newPoints;
             currentUserData.gamesPlayed = newGamesPlayed;
-            document.getElementById('userPoints').innerText = newPoints.toLocaleString();
-            document.getElementById('totalGames').innerText = newGamesPlayed;
+
+            // Update all UI elements
+            const pointsEl = document.getElementById('userPoints');
+            if (pointsEl) pointsEl.innerText = newPoints.toLocaleString();
+            const totalGamesEl = document.getElementById('totalGames');
+            if (totalGamesEl) totalGamesEl.innerText = newGamesPlayed;
             const level = Math.floor(newPoints / 1000) + 1;
             const levelEl = document.getElementById('userLevel');
             if (levelEl) levelEl.innerText = level;
+
+            const rankInfo = getRankInfo(newPoints);
             const rankEl = document.getElementById('userRank');
-            let rank = 'Bronze';
-            if (newPoints >= 3000) rank = 'Platinum';
-            else if (newPoints >= 1500) rank = 'Gold';
-            else if (newPoints >= 500) rank = 'Silver';
-            if (rankEl) rankEl.innerText = rank;
+            if (rankEl) { rankEl.innerText = rankInfo.name; rankEl.style.color = rankInfo.color; }
         }
+
         try {
             await addDoc(collection(db, "game_history"), {
                 userId: currentUserUid,
@@ -559,15 +429,128 @@ async function handleGameEnd(gameName, scoreVal, pointsEarned) {
                 playedAt: serverTimestamp()
             });
         } catch (e) { console.error("History save error:", e); }
+
         updateActivityTable();
-        showToast(`Game Over! You earned ${pointsEarned} PlayPoints!`, 'success');
+        showToast(`+${pointsEarned} PlayPoints earned!`, 'success');
     } catch (e) {
-        console.error("Error updating score:", e);
+        console.error("Score update error:", e);
         showToast('Error saving score: ' + e.message, 'error');
     }
 }
 
-// Global scope specifics for HTML onclick attributes
+/* ============================================================
+   SNAKE GAME LOGIC
+   ============================================================ */
+let canvas, ctx;
+let snake = [], food = {}, direction = 'RIGHT';
+let gameInterval, gameRunning = false, score = 0;
+const boxSize = 20;
+
+function startSnakeGame() {
+    canvas = document.getElementById('snakeCanvas');
+    ctx = canvas.getContext('2d');
+    snake = [{ x: 10 * boxSize, y: 10 * boxSize }];
+    direction = 'RIGHT';
+    score = 0;
+    gameRunning = true;
+    document.getElementById('currentScore').innerText = '0';
+    const rewardEl = document.getElementById('currentPointsReward');
+    if (rewardEl) rewardEl.innerText = '0 pts';
+    document.getElementById('gameOverlay').style.display = 'none';
+    generateFood();
+    if (gameInterval) clearInterval(gameInterval);
+    gameInterval = setInterval(gameLoop, 100);
+    window.addEventListener('keydown', changeDirection);
+}
+
+function changeDirection(e) {
+    if (!gameRunning) return;
+    if ([37,38,39,40].includes(e.keyCode)) e.preventDefault();
+    if (e.keyCode===37 && direction!=='RIGHT') direction='LEFT';
+    else if (e.keyCode===38 && direction!=='DOWN') direction='UP';
+    else if (e.keyCode===39 && direction!=='LEFT') direction='RIGHT';
+    else if (e.keyCode===40 && direction!=='UP') direction='DOWN';
+}
+
+function gameLoop() {
+    let hx = snake[0].x, hy = snake[0].y;
+    if (direction==='LEFT') hx -= boxSize;
+    if (direction==='UP') hy -= boxSize;
+    if (direction==='RIGHT') hx += boxSize;
+    if (direction==='DOWN') hy += boxSize;
+    if (hx<0||hx>=canvas.width||hy<0||hy>=canvas.height) { snakeGameOver(); return; }
+    for (let i=0;i<snake.length;i++) if (hx===snake[i].x&&hy===snake[i].y) { snakeGameOver(); return; }
+    if (hx===food.x&&hy===food.y) {
+        score += 10;
+        document.getElementById('currentScore').innerText = score;
+        const r = document.getElementById('currentPointsReward');
+        if (r) r.innerText = `${score} pts`;
+        generateFood();
+    } else { snake.pop(); }
+    snake.unshift({ x: hx, y: hy });
+    drawSnake();
+}
+
+function drawSnake() {
+    ctx.fillStyle = '#0f0f0f';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#ff205f';
+    ctx.shadowBlur = 15; ctx.shadowColor = '#ff205f';
+    ctx.fillRect(food.x, food.y, boxSize, boxSize);
+    ctx.shadowBlur = 0;
+    snake.forEach((seg, i) => {
+        ctx.fillStyle = i===0 ? '#ffb320' : '#cc8f1a';
+        ctx.shadowBlur = i===0 ? 15 : 0; ctx.shadowColor = '#ffb320';
+        ctx.fillRect(seg.x, seg.y, boxSize, boxSize);
+        ctx.strokeStyle = '#131313';
+        ctx.strokeRect(seg.x, seg.y, boxSize, boxSize);
+    });
+    ctx.shadowBlur = 0;
+}
+
+function generateFood() {
+    food = {
+        x: Math.floor(Math.random()*(canvas.width/boxSize))*boxSize,
+        y: Math.floor(Math.random()*(canvas.height/boxSize))*boxSize
+    };
+    for (let p of snake) if (p.x===food.x&&p.y===food.y) generateFood();
+}
+
+async function snakeGameOver() {
+    clearInterval(gameInterval);
+    gameRunning = false;
+    document.getElementById('overlayTitle').innerText = 'Game Over';
+    document.getElementById('overlayScore').innerText = `Final Score: ${score}`;
+    document.getElementById('overlayScore').style.display = 'block';
+    document.getElementById('gameOverlay').style.display = 'flex';
+    await handleGameEnd('Neon Snake', score, score);
+}
+
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+function logout() {
+    signOut(auth).then(() => { window.location.href = 'index.html'; })
+                 .catch(e => console.error("Sign out error", e));
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function showToast(msg, type = 'info') {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    if (toast && toastMsg) {
+        toastMsg.innerText = msg;
+        toast.style.borderColor = type === 'error' ? '#ff205f' : '#ffb320';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+}
+
+function setupEventListeners() {}
+
+// Global scope
 window.switchTab = switchTab;
 window.startSnakeGame = startSnakeGame;
 window.logout = logout;

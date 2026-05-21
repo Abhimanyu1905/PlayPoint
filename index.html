@@ -278,66 +278,11 @@
                 <div class="cata new">Rankings</div>
                 <h2>Top Players This Week</h2>
             </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="review-item">
-                        <div class="review-cover set-bg" data-setbg="img/review/1.jpg">
-                            <div class="score yellow">#1</div>
-                        </div>
-                        <div class="review-text">
-                            <h5>ProGamer_X</h5>
-                            <p>12,450 PlayPoints &bull; Legend Rank</p>
-                            <div class="rating">
-                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i><i class="fa fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="review-item">
-                        <div class="review-cover set-bg" data-setbg="img/review/2.jpg">
-                            <div class="score purple">#2</div>
-                        </div>
-                        <div class="review-text">
-                            <h5>NeonBlade99</h5>
-                            <p>9,870 PlayPoints &bull; Diamond Rank</p>
-                            <div class="rating">
-                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i><i class="fa fa-star-half-o"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="review-item">
-                        <div class="review-cover set-bg" data-setbg="img/review/3.jpg">
-                            <div class="score green">#3</div>
-                        </div>
-                        <div class="review-text">
-                            <h5>CyberAce_Z</h5>
-                            <p>7,320 PlayPoints &bull; Gold Rank</p>
-                            <div class="rating">
-                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i><i class="fa fa-star-o"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="review-item">
-                        <div class="review-cover set-bg" data-setbg="img/review/4.jpg">
-                            <div class="score pink">#4</div>
-                        </div>
-                        <div class="review-text">
-                            <h5>SnakeKing_7</h5>
-                            <p>5,100 PlayPoints &bull; Gold Rank</p>
-                            <div class="rating">
-                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
-                                <i class="fa fa-star-half-o"></i><i class="fa fa-star-o"></i>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Dynamic leaderboard cards injected by JS -->
+            <div class="row" id="landingLeaderboardRow">
+                <div class="col-12 text-center" style="color:#878787;padding:40px 0;">
+                    <i class="fa fa-spinner fa-spin" style="font-size:30px;color:#ffb320;"></i>
+                    <p style="margin-top:15px;">Loading leaderboard...</p>
                 </div>
             </div>
             <div class="text-center" style="margin-top:50px;">
@@ -354,28 +299,28 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="pp-stat-item">
                         <i class="fa fa-users pp-stat-icon"></i>
-                        <h3>10,000+</h3>
+                        <h3 id="statPlayers">—</h3>
                         <p>Registered Players</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="pp-stat-item">
                         <i class="fa fa-gamepad pp-stat-icon"></i>
-                        <h3>50,000+</h3>
+                        <h3 id="statGames">—</h3>
                         <p>Games Played</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="pp-stat-item">
                         <i class="fa fa-trophy pp-stat-icon"></i>
-                        <h3>500+</h3>
-                        <p>Tournaments Hosted</p>
+                        <h3 id="statTournaments">2</h3>
+                        <p>Active Tournaments</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="pp-stat-item">
                         <i class="fa fa-database pp-stat-icon"></i>
-                        <h3>2M+</h3>
+                        <h3 id="statPoints">—</h3>
                         <p>PlayPoints Distributed</p>
                     </div>
                 </div>
@@ -550,6 +495,111 @@
     <script src="js/jquery.marquee.min.js"></script>
     <script src="js/main.js"></script>
     <script type="module" src="js/auth.js"></script>
+    <!-- Live stats + leaderboard from Firestore -->
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import {
+            collection, query, orderBy, limit, onSnapshot,
+            getCountFromServer, getDocs, where
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const RANK_COLORS = {
+            Legend: '#ff205f', Diamond: '#694eae',
+            Gold: '#ffb320', Silver: '#aaaaaa', Bronze: '#cd7f32'
+        };
+        const SCORE_CLASSES = ['yellow','purple','green','pink'];
+
+        function getRank(pts) {
+            if (pts >= 10000) return 'Legend';
+            if (pts >= 5000)  return 'Diamond';
+            if (pts >= 2000)  return 'Gold';
+            if (pts >= 500)   return 'Silver';
+            return 'Bronze';
+        }
+
+        function starsHTML(pts) {
+            const s = Math.min(5, Math.max(1, Math.round(pts / 2500)));
+            let h = '';
+            for (let i=0;i<5;i++) h += `<i class="fa fa-${i<s?'star':'star-o'}"></i>`;
+            return h;
+        }
+
+        function avatarHTML(photoURL, username, size=120) {
+            if (photoURL) {
+                return `<img src="${photoURL}" alt="${username}"
+                    style="width:100%;height:100%;object-fit:cover;border-radius:0;">`;
+            }
+            const initial = (username||'?').charAt(0).toUpperCase();
+            return `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+                background:linear-gradient(135deg,#252525,#1c1c1c);font-size:${size*0.4}px;
+                font-weight:800;color:#ffb320;">${initial}</div>`;
+        }
+
+        // ── Live leaderboard ──────────────────────────────────────
+        const lbRow = document.getElementById('landingLeaderboardRow');
+        const usersRef = collection(db, "users");
+        const lbQ = query(usersRef, orderBy("points","desc"), limit(10));
+
+        onSnapshot(lbQ, (snap) => {
+            const all = [];
+            snap.forEach(d => all.push(d.data()));
+            const players = all.filter(u => u.role !== 'admin').slice(0, 4);
+
+            if (!players.length) {
+                lbRow.innerHTML = '<div class="col-12 text-center" style="color:#878787;padding:40px 0;">No players yet — be the first to sign up!</div>';
+                return;
+            }
+
+            lbRow.innerHTML = players.map((p, i) => {
+                const rank = getRank(p.points || 0);
+                const scoreClass = SCORE_CLASSES[i] || 'yellow';
+                const rankColor = RANK_COLORS[rank];
+                return `
+                <div class="col-lg-3 col-md-6">
+                    <div class="review-item">
+                        <div class="review-cover" style="position:relative;margin-bottom:30px;height:280px;overflow:hidden;background:#1c1c1c;">
+                            ${avatarHTML(p.photoURL, p.username, 280)}
+                            <div class="score ${scoreClass}" style="position:absolute;width:54px;height:54px;top:-27px;left:26px;padding-top:15px;font-size:18px;font-weight:500;color:#fff;text-align:center;border-radius:50%;z-index:1;">#${i+1}</div>
+                        </div>
+                        <div class="review-text">
+                            <h5>${p.username}</h5>
+                            <p style="color:${rankColor};font-weight:700;">${(p.points||0).toLocaleString()} pts &bull; ${rank}</p>
+                            <div class="rating" style="margin-bottom:10px;">${starsHTML(p.points||0)}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        });
+
+        // ── Live stats ────────────────────────────────────────────
+        async function loadStats() {
+            try {
+                // Player count (non-admin users)
+                const usersSnap = await getCountFromServer(collection(db, "users"));
+                const totalUsers = usersSnap.data().count;
+                const el = document.getElementById('statPlayers');
+                if (el) el.innerText = totalUsers.toLocaleString();
+
+                // Games played count
+                const gamesSnap = await getCountFromServer(collection(db, "game_history"));
+                const totalGames = gamesSnap.data().count;
+                const gEl = document.getElementById('statGames');
+                if (gEl) gEl.innerText = totalGames.toLocaleString();
+
+                // Total points distributed — sum all user points
+                const allUsersSnap = await getDocs(collection(db, "users"));
+                let totalPts = 0;
+                allUsersSnap.forEach(d => { totalPts += (d.data().points || 0); });
+                const pEl = document.getElementById('statPoints');
+                if (pEl) pEl.innerText = totalPts >= 1000
+                    ? (totalPts / 1000).toFixed(1) + 'K'
+                    : totalPts.toLocaleString();
+            } catch (e) {
+                console.error("Stats load error:", e);
+            }
+        }
+        loadStats();
+    </script>
 
     <script>
         // Modal open/close

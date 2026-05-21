@@ -668,3 +668,83 @@
     .tetris-side-panel { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
     .tetris-side-panel .panel-gw { flex: 1; min-width: 80px; padding: 12px; margin-bottom: 0; }
 }
+
+/* ====================================================
+   PROFILE PICTURE UPLOAD
+   ==================================================== */
+
+.avatar-upload-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.avatar-upload-wrap .user-avatar-gw {
+    margin: 0;
+    width: 80px;
+    height: 80px;
+    font-size: 32px;
+    transition: filter 0.2s;
+}
+
+.avatar-upload-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: #fff;
+    font-size: 20px;
+}
+
+.avatar-upload-wrap:hover .avatar-upload-overlay {
+    opacity: 1;
+}
+
+.avatar-upload-wrap:hover .user-avatar-gw {
+    filter: brightness(0.7);
+}
+
+/* Upload progress bar */
+.avatar-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.avatar-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #ffb320;
+    border-radius: 2px;
+    transition: width 0.2s ease;
+}
+
+/* Leaderboard avatar alignment */
+#leaderboardTable td:nth-child(2) {
+    min-width: 160px;
+}
+
+/* Landing leaderboard player card avatar */
+.review-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Dashboard metric card — next rank */
+#nextRankName {
+    font-size: 28px;
+    font-weight: 800;
+}
