@@ -57,12 +57,12 @@ async function loadAdminData() {
         });
 
         // 1. Total Users
-        const totalUsersEl = document.querySelectorAll('.card h2.text-gradient')[0];
+        const totalUsersEl = document.getElementById('adminTotalUsers');
         if (totalUsersEl) totalUsersEl.innerText = allUsers.length.toLocaleString();
 
         // 2. Active Now (Simulation)
         const activeCount = Math.max(1, Math.floor(allUsers.length * (Math.random() * 0.2 + 0.1)));
-        const activeUsersEl = document.querySelectorAll('.card h2.text-gradient')[1];
+        const activeUsersEl = document.getElementById('adminActiveUsers');
         if (activeUsersEl) activeUsersEl.innerText = activeCount.toLocaleString();
 
         // 3. Points Distributed
@@ -122,7 +122,7 @@ function renderGrowthChart(users) {
         const y = height - barHeight;
 
         barsHTML += `
-            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="var(--primary)" rx="4" />
+            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="#ffb320" rx="4" />
             <text x="${x + barWidth / 2}" y="${y - 10}" fill="#fff" font-size="12" text-anchor="middle">${count}</text>
             <text x="${x + barWidth / 2}" y="${height + 20}" fill="#888" font-size="10" text-anchor="middle">Day ${i + 1}</text>
         `;

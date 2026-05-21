@@ -4,223 +4,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | PlayPoints</title>
+    <title>Player Dashboard | PlayPoints</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="./css/style.css" type="text/css">
-    <link rel="stylesheet" href="./css/dashboard.css" type="text/css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,500i,700,700i" rel="stylesheet">
 
-    <!-- Icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/owl.carousel.css" />
+    <link rel="stylesheet" href="css/animate.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/playpoints-theme.css" />
 </head>
 
 <body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
 
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="brand text-gradient">
-                <i class='bx bxs-joystick'></i> PlayPoints
+    <!-- Header section -->
+    <header class="header-section">
+        <div class="container">
+            <!-- logo -->
+            <a class="site-logo" href="dashboard.html" style="font-size: 26px; font-weight: 800; color: #fff; text-decoration: none;">
+                <span style="color: var(--primary-gw);"><i class="fa fa-gamepad"></i> PLAY</span>POINTS
+            </a>
+            
+            <div class="user-panel">
+                <a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</a>
             </div>
 
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active" onclick="switchTab('overview')">
-                        <i class='bx bxs-dashboard'></i> Overview
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="switchTab('games')">
-                        <i class='bx bxs-game'></i> Games
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="switchTab('leaderboard')">
-                        <i class='bx bxs-trophy'></i> Leaderboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="logout()">
-                        <i class='bx bx-log-out'></i> Logout
-                    </a>
-                </li>
-            </ul>
-
-            <div class="user-profile-mini">
-                <div class="avatar" id="userAvatar">U</div>
-                <div class="user-info">
-                    <h4 id="userNameDisplay">User</h4>
-                    <span class="text-gray" style="font-size: 0.8rem;">Level 1</span>
-                </div>
+            <!-- responsive menu toggle -->
+            <div class="nav-switch">
+                <i class="fa fa-bars"></i>
             </div>
-        </aside>
+            
+            <!-- site menu -->
+            <nav class="main-menu">
+                <ul>
+                    <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="#" class="active" onclick="switchTab('overview')">Overview</a></li>
+                    <li><a href="#" onclick="switchTab('games')">Games</a></li>
+                    <li><a href="#" onclick="switchTab('leaderboard')">Leaderboard</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- Header section end -->
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="top-header">
-                <div class="page-title">
-                    <h1 id="pageTitle">Dashboard</h1>
-                    <p class="text-gray">Welcome back, <span id="welcomeName" class="text-gradient">Gamer</span>!</p>
-                </div>
+    <!-- Dashboard Content Wrap -->
+    <section class="dashboard-wrap">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar Column -->
+                <div class="col-lg-3">
+                    <div class="dashboard-sidebar wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="user-profile-header">
+                            <div class="user-avatar-gw" id="userAvatar">U</div>
+                            <h4 id="userNameDisplay">Gamer</h4>
+                            <p>Rank: <span id="userRank" style="color: var(--primary-gw);">Silver</span></p>
+                        </div>
+                        <ul class="dashboard-menu">
+                            <li><a href="#" id="menu-overview" class="active" onclick="switchTab('overview')"><i class="fa fa-th-large"></i> Overview</a></li>
+                            <li><a href="#" id="menu-games" onclick="switchTab('games')"><i class="fa fa-gamepad"></i> Play Games</a></li>
+                            <li><a href="#" id="menu-leaderboard" onclick="switchTab('leaderboard')"><i class="fa fa-trophy"></i> Leaderboard</a></li>
+                            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Sign Out</a></li>
+                        </ul>
+                    </div>
 
-                <div class="stats-bar">
-                    <div class="stat-card-mini">
-                        <i class='bx bxs-coin-stack stat-icon'></i>
-                        <span id="userPoints">0</span> pts
+                    <!-- Side Stats / Help Card -->
+                    <div class="metric-card wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="ti-notic">Pro Tip</div>
+                        <p style="color: #fff; font-size: 13px; line-height: 1.6; margin-bottom: 0;">
+                            Play the **Neon Snake** game to earn extra PlayPoints and rank up! Try to beat the top players.
+                        </p>
                     </div>
                 </div>
-            </header>
 
-            <!-- Overview Section -->
-            <div id="section-overview" class="dashboard-section">
-                <div class="dashboard-grid">
-                    <!-- Stats Cards -->
-                    <div class="card card-sm">
-                        <div class="card-title">
-                            <span>Total Games</span>
-                            <i class='bx bxs-game text-gray'></i>
+                <!-- Main Content Column -->
+                <div class="col-lg-9">
+                    <!-- Heading -->
+                    <div class="panel-gw mb-4 d-flex justify-content-between align-items-center flex-wrap wow fadeInUp" data-wow-delay="0.1s" style="padding: 20px 35px;">
+                        <div>
+                            <h2 id="pageTitle" style="color: #fff; font-weight: 800; text-transform: uppercase; margin: 0; font-size: 28px;">Player Dashboard</h2>
+                            <p style="margin: 0; color: #ffb320; font-weight: 500;">Welcome back, <span id="welcomeName" style="color: #fff; font-weight: bold;">Gamer</span>!</p>
                         </div>
-                        <h2 class="text-gradient" id="totalGames">0</h2>
+                        <div style="background: var(--primary-gw); color: #131313; padding: 10px 25px; border-radius: 30px; font-weight: 700; font-size: 16px;">
+                            <i class="fa fa-database"></i> <span id="userPoints">0</span> PLAYPOINTS
+                        </div>
                     </div>
 
-                    <div class="card card-sm">
-                        <div class="card-title">
-                            <span>Rank</span>
-                            <i class='bx bxs-medal text-gray'></i>
+                    <!-- Metrics row -->
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="metric-card">
+                                <div class="ti-notic">Games Played</div>
+                                <h3 id="totalGames">0</h3>
+                                <p>Sessions Logged</p>
+                            </div>
                         </div>
-                        <h2 class="text-gradient">Silver</h2>
-                    </div>
-
-                    <div class="card card-sm">
-                        <div class="card-title">
-                            <span>Next Reward</span>
-                            <i class='bx bxs-gift text-gray'></i>
+                        <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="metric-card">
+                                <div class="ti-notic">Level</div>
+                                <h3 id="userLevel">1</h3>
+                                <p>Progress: Level Up</p>
+                            </div>
                         </div>
-                        <p class="text-gray" style="font-size: 0.9rem;">500 pts to Gold</p>
-                        <div
-                            style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); margin-top: 10px; border-radius: 3px;">
-                            <div style="width: 70%; height: 100%; background: var(--primary); border-radius: 3px;">
+                        <div class="col-md-4 col-sm-12 wow fadeInUp" data-wow-delay="0.4s">
+                            <div class="metric-card">
+                                <div class="ti-notic">Next Rank</div>
+                                <h3 style="color: #cd7f32;">GOLD</h3>
+                                <p>500 Points Required</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Recent Activity Table -->
-                    <div class="card card-lg">
-                        <div class="card-title">
-                            Recent Activity
-                            <a href="#" class="btn-outline"
-                                style="padding: 5px 15px; font-size: 0.8rem; border-radius: 8px;">View All</a>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Game</th>
-                                        <th>Score</th>
-                                        <th>Date</th>
-                                        <th>Points</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="activityTable">
-                                    <!-- Populated by JS -->
-                                </tbody>
-                            </table>
+                    <!-- ========================================== -->
+                    <!-- TAB: OVERVIEW -->
+                    <!-- ========================================== -->
+                    <div id="section-overview" class="dashboard-section">
+                        <div class="row">
+                            <!-- Recent Activity -->
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw">
+                                    <div class="panel-title-gw">
+                                        <span><i class="fa fa-history"></i> Recent Activity</span>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-gw">
+                                            <thead>
+                                                <tr>
+                                                    <th>Game</th>
+                                                    <th>Score</th>
+                                                    <th>Date Logged</th>
+                                                    <th>Points Earned</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="activityTable">
+                                                <!-- Dynamic JS populated -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Points History Chart -->
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.2s">
+                                <div class="panel-gw">
+                                    <div class="panel-title-gw">
+                                        <span><i class="fa fa-line-chart"></i> Points History</span>
+                                    </div>
+                                    <div class="chart-wrap" id="pointsChartContainer">
+                                        <!-- Dynamic JS SVG chart -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Points Chart -->
-                    <div class="card card-lg">
-                        <div class="card-title">Points History</div>
-                        <div id="pointsChartContainer"
-                            style="width: 100%; height: 250px; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 20px;">
-                            <!-- SVG Chart injected by JS -->
+                    <!-- ========================================== -->
+                    <!-- TAB: GAMES -->
+                    <!-- ========================================== -->
+                    <div id="section-games" class="dashboard-section" style="display: none;">
+                        <div class="row">
+                            <!-- Neon Snake Arcade -->
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw text-center">
+                                    <div class="panel-title-gw justify-content-center">
+                                        <span><i class="fa fa-gamepad"></i> NEON SNAKE ARCADE</span>
+                                    </div>
+
+                                    <div class="snake-game-wrapper">
+                                        <canvas id="snakeCanvas" width="600" height="400"></canvas>
+
+                                        <!-- Overlay Start/Game Over -->
+                                        <div id="gameOverlay" class="snake-overlay">
+                                            <h3 id="overlayTitle">READY TO RUMBLE?</h3>
+                                            <p id="overlayScore" style="display: none;">Final Score: 0</p>
+                                            <button class="site-btn" onclick="startSnakeGame()" style="border-radius: 4px; padding: 12px 30px;">
+                                                <i class="fa fa-play"></i> START ARCADE
+                                            </button>
+                                            <p style="margin-top: 15px; font-size: 13px; color: #a0a0b0;">
+                                                Use Arrow Keys (Up, Down, Left, Right) to navigate.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center gap-5 mt-4" style="gap: 40px;">
+                                        <div>
+                                            <span style="color: #a0a0b0; text-transform: uppercase; font-size: 12px; font-weight: 600;">Current Run Score</span>
+                                            <h2 id="currentScore" style="color: #fff; font-weight: 800; font-size: 36px; margin: 0;">0</h2>
+                                        </div>
+                                        <div>
+                                            <span style="color: #a0a0b0; text-transform: uppercase; font-size: 12px; font-weight: 600;">Estimated Reward</span>
+                                            <h2 id="currentPointsReward" style="color: var(--primary-gw); font-weight: 800; font-size: 36px; margin: 0;">0 pts</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Showcase Available Games Grid -->
+                            <div class="col-12 mt-4 wow fadeInUp" data-wow-delay="0.2s">
+                                <div class="panel-title-gw">
+                                    <span><i class="fa fa-desktop"></i> Available Arena Games</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="game-card-gw">
+                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/1.jpg');"></div>
+                                            <div class="game-card-body">
+                                                <h5>Cyber Racer</h5>
+                                                <p>High-speed futuristic racing game inside a synthwave neon skyline.</p>
+                                                <button class="site-btn btn-sm" onclick="alert('Launching Cyber Racer Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="game-card-gw">
+                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/2.jpg');"></div>
+                                            <div class="game-card-body">
+                                                <h5>Neon Strike</h5>
+                                                <p>Fast-paced strategic first person arena shooter in cyber grids.</p>
+                                                <button class="site-btn btn-sm" onclick="alert('Launching Neon Strike Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="game-card-gw">
+                                            <div class="game-card-thumb" style="background-image: url('img/recent-game/3.jpg');"></div>
+                                            <div class="game-card-body">
+                                                <h5>Space Odyssey</h5>
+                                                <p>Epic retro-galactic galaxy shooter with rogue alien spacecrafts.</p>
+                                                <button class="site-btn btn-sm" onclick="alert('Launching Space Odyssey Arena soon!')" style="border-radius: 4px;">PLAY NOW</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Top Game -->
-                    <div class="card card-sm">
-                        <div class="card-title">Top Game</div>
-                        <div class="game-img"
-                            style="height: 120px; font-size: 2rem; border-radius: 12px; margin-bottom: 15px;">
-                            <i class='bx bxs-car'></i>
+                    <!-- ========================================== -->
+                    <!-- TAB: LEADERBOARD -->
+                    <!-- ========================================== -->
+                    <div id="section-leaderboard" class="dashboard-section" style="display: none;">
+                        <div class="row">
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw">
+                                    <div class="panel-title-gw">
+                                        <span><i class="fa fa-trophy"></i> Global Player Leaderboard</span>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-gw" id="leaderboardTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Rank</th>
+                                                    <th>Player</th>
+                                                    <th>Level</th>
+                                                    <th>Total Points</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Dynamic JS populated -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <h4>Cyber Racer</h4>
-                        <p class="text-gray">High Score: 5,200</p>
                     </div>
+
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Games Section (Snake Game) -->
-            <div id="section-games" class="dashboard-section" style="display: none;">
-                <div class="card card-lg" style="text-align: center;">
-                    <div class="card-title" style="justify-content: center;">
-                        <span class="text-gradient" style="font-size: 1.5rem;">Neon Snake</span>
-                    </div>
+    <!-- Footer section -->
+    <footer class="footer-section">
+        <div class="container text-center">
+            <p class="copyright" style="margin-bottom: 0;">
+                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | PlayPoints Esports
+            </p>
+        </div>
+    </footer>
+    <!-- Footer section end -->
 
-                    <div class="game-container" style="position: relative; display: inline-block; margin: 20px auto;">
-                        <canvas id="snakeCanvas" width="600" height="400"
-                            style="background: rgba(0,0,0,0.8); border: 2px solid var(--primary); border-radius: 8px; box-shadow: 0 0 20px var(--primary-glow); transition: border-color 0.3s;"></canvas>
-
-                        <!-- Overlay for Start/Game Over -->
-                        <div id="gameOverlay"
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); border-radius: 8px;">
-                            <h2 id="overlayTitle" class="text-gradient" style="font-size: 2.5rem; margin-bottom: 20px;">
-                                Ready?</h2>
-                            <p id="overlayScore" style="color: #fff; margin-bottom: 20px; display: none;">Score: 0</p>
-                            <button class="btn btn-primary" onclick="startSnakeGame()">
-                                <i class='bx bx-play'></i> Start Game
-                            </button>
-                            <p style="margin-top: 15px; color: var(--text-gray); font-size: 0.9rem;">
-                                Use <i class='bx bx-up-arrow-alt'></i> <i class='bx bx-down-arrow-alt'></i> <i
-                                    class='bx bx-left-arrow-alt'></i> <i class='bx bx-right-arrow-alt'></i> to move
-                            </p>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 30px;">
-                        <div>
-                            <span class="text-gray">Current Score</span>
-                            <h3 id="currentScore" class="text-white">0</h3>
-                        </div>
-                        <div>
-                            <span class="text-gray">High Score</span>
-                            <h3 id="highScore" class="text-gradient">0</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Leaderboard Section (Hidden by default) -->
-            <div id="section-leaderboard" class="dashboard-section" style="display: none;">
-                <div class="card">
-                    <div class="table-container">
-                        <table id="leaderboardTable">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Player</th>
-                                    <th>Level</th>
-                                    <th>Total Points</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- JS Populated -->
-                                <!-- JS Populated -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- Toast -->
+    <!-- Toast Notification -->
     <div id="toast" class="toast">
-        <i class='bx bx-info-circle'></i>
-        <span id="toastMsg">Notification</span>
+        <i class="fa fa-info-circle"></i>
+        <span id="toastMsg">Notification Message</span>
     </div>
 
+    <!-- Javascript Assets -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.marquee.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Firebase Dynamic Dashboard Logic -->
     <script type="module" src="js/dashboard.js"></script>
 </body>
 

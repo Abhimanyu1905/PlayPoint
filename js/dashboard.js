@@ -63,8 +63,21 @@ function loadDashboardData() {
     document.getElementById('userAvatar').innerText = currentUserData.username.charAt(0).toUpperCase();
 
     // Stats
-    document.getElementById('userPoints').innerText = (currentUserData.points || 0).toLocaleString();
+    const points = currentUserData.points || 0;
+    document.getElementById('userPoints').innerText = points.toLocaleString();
     document.getElementById('totalGames').innerText = currentUserData.gamesPlayed || 0;
+
+    // Dynamically calculate level & rank
+    const level = Math.floor(points / 1000) + 1;
+    const levelEl = document.getElementById('userLevel');
+    if (levelEl) levelEl.innerText = level;
+
+    const rankEl = document.getElementById('userRank');
+    let rank = 'Bronze';
+    if (points >= 3000) rank = 'Platinum';
+    else if (points >= 1500) rank = 'Gold';
+    else if (points >= 500) rank = 'Silver';
+    if (rankEl) rankEl.innerText = rank;
 
     // Load History
     updateActivityTable();
@@ -166,12 +179,12 @@ function renderPointsChart() {
         <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
             <defs>
                 <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.5" />
-                    <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
+                    <stop offset="0%" style="stop-color:#ffb320;stop-opacity:0.5" />
+                    <stop offset="100%" style="stop-color:#ffb320;stop-opacity:0" />
                 </linearGradient>
             </defs>
-            <polyline points="${points}" fill="url(#grad)" stroke="var(--primary)" stroke-width="3"/>
-            <circle cx="${(data.length - 1) * stepX}" cy="${height - ((data[data.length - 1] / max) * height)}" r="6" fill="#fff" stroke="var(--primary)" stroke-width="2" />
+            <polyline points="${points}" fill="url(#grad)" stroke="#ffb320" stroke-width="3"/>
+            <circle cx="${(data.length - 1) * stepX}" cy="${height - ((data[data.length - 1] / max) * height)}" r="6" fill="#fff" stroke="#ffb320" stroke-width="2" />
         </svg>
     `;
 
@@ -295,6 +308,8 @@ function startSnakeGame() {
     gameRunning = true;
 
     document.getElementById('currentScore').innerText = '0';
+    const rewardEl = document.getElementById('currentPointsReward');
+    if (rewardEl) rewardEl.innerText = '0 pts';
     document.getElementById('gameOverlay').style.display = 'none';
 
     generateFood();
@@ -349,6 +364,8 @@ function gameLoop() {
     if (headX === food.x && headY === food.y) {
         score += 10;
         document.getElementById('currentScore').innerText = score;
+        const rewardEl = document.getElementById('currentPointsReward');
+        if (rewardEl) rewardEl.innerText = `${score} pts`;
         generateFood();
     } else {
         snake.pop(); // Remove tail
@@ -362,24 +379,24 @@ function gameLoop() {
 
 function drawGame() {
     // Clear Canvas
-    ctx.fillStyle = '#0b0c15'; // Background
+    ctx.fillStyle = '#0f0f0f'; // Dark charcoal background
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw Food
-    ctx.fillStyle = '#ff0055'; // Neon Pink Apple
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = '#ff0055';
+    ctx.fillStyle = '#ff205f'; // Crimson Red
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#ff205f';
     ctx.fillRect(food.x, food.y, boxSize, boxSize);
     ctx.shadowBlur = 0;
 
     // Draw Snake
     for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? '#00f3ff' : '#bc13fe'; // Head: Cyan, Body: Purple
+        ctx.fillStyle = i === 0 ? '#ffb320' : '#cc8f1a'; // Head: Gold, Body: Darker Gold
         ctx.shadowBlur = i === 0 ? 15 : 0;
-        ctx.shadowColor = '#00f3ff';
+        ctx.shadowColor = '#ffb320';
         ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
 
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = '#131313';
         ctx.strokeRect(snake[i].x, snake[i].y, boxSize, boxSize);
     }
 }
@@ -414,12 +431,6 @@ async function gameOver() {
     if (pointsEarned > 0 && currentUserUid) {
         try {
             const userRef = doc(db, "users", currentUserUid);
-            // We fetch fresh data from user doc first to ensure we have latest points? 
-            // We already have currentUserData in memory but it might be stale if other tabs open.
-            // But updateDoc merges, so we are safe on other fields.
-            // Problem: points is additive. We need to increment.
-            // Firestore has increment() function for atomic updates!
-            // But let's stick to simple read-modify-write as we have currentUserData for now or just fetch.
 
             // Re-fetch strictly to be safe for atomic-like update
             const docSnap = await getDoc(userRef);
@@ -440,6 +451,18 @@ async function gameOver() {
                 // Update Dashboard UI
                 document.getElementById('userPoints').innerText = newPoints.toLocaleString();
                 document.getElementById('totalGames').innerText = newGamesPlayed;
+                
+                // Update dynamically calculated level & rank
+                const level = Math.floor(newPoints / 1000) + 1;
+                const levelEl = document.getElementById('userLevel');
+                if (levelEl) levelEl.innerText = level;
+
+                const rankEl = document.getElementById('userRank');
+                let rank = 'Bronze';
+                if (newPoints >= 3000) rank = 'Platinum';
+                else if (newPoints >= 1500) rank = 'Gold';
+                else if (newPoints >= 500) rank = 'Silver';
+                if (rankEl) rankEl.innerText = rank;
             }
 
             // Log History
@@ -490,7 +513,7 @@ function showToast(msg, type = 'info') {
 
     if (toast && toastMsg) {
         toastMsg.innerText = msg;
-        toast.style.borderColor = type === 'error' ? '#ff0055' : 'var(--primary)';
+        toast.style.borderColor = type === 'error' ? '#ff205f' : '#ffb320';
         toast.classList.add('show');
 
         setTimeout(() => {

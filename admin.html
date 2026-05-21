@@ -6,147 +6,217 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | PlayPoints</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="./css/style.css" type="text/css">
-    <link rel="stylesheet" href="./css/dashboard.css" type="text/css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,500i,700,700i" rel="stylesheet">
 
-    <!-- Icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/owl.carousel.css" />
+    <link rel="stylesheet" href="css/animate.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/playpoints-theme.css" />
 </head>
 
 <body>
-
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar admin-sidebar" style="border-right-color: var(--accent);">
-            <div class="brand text-gradient"
-                style="background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%); -webkit-background-clip: text;">
-                <i class='bx bxs-check-shield'></i> AdminPanel
-            </div>
-
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active" onclick="switchAdminTab('overview')">
-                        <i class='bx bxs-dashboard'></i> Overview
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="switchAdminTab('users')">
-                        <i class='bx bxs-user-account'></i> Users
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="switchAdminTab('games')">
-                        <i class='bx bxs-game'></i> Manage Games
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="logout()">
-                        <i class='bx bx-log-out'></i> Logout
-                    </a>
-                </li>
-            </ul>
-
-            <div class="user-profile-mini">
-                <div class="avatar" style="background: var(--accent);">A</div>
-                <div class="user-info">
-                    <h4>Admin</h4>
-                    <span class="text-gray" style="font-size: 0.8rem;">Superuser</span>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="top-header">
-                <div class="page-title">
-                    <h1 id="pageTitle">Admin Overview</h1>
-                </div>
-            </header>
-
-            <!-- Overview Section -->
-            <div id="section-overview" class="dashboard-section">
-                <div class="dashboard-grid">
-                    <div class="card card-sm">
-                        <div class="card-title">Total Users</div>
-                        <h2 class="text-gradient">1,245</h2>
-                    </div>
-                    <div class="card card-sm">
-                        <div class="card-title">Active Now</div>
-                        <h2 class="text-gradient" style="color: var(--primary);">85</h2>
-                    </div>
-                    <div class="card card-sm">
-                        <div class="card-title">Points Distributed</div>
-                        <h2 class="text-gradient" id="adminTotalPoints">0</h2>
-                    </div>
-
-                    <!-- Chart -->
-                    <div class="card card-lg">
-                        <div class="card-title">User Growth Analytics</div>
-                        <div id="adminChartContainer"
-                            style="width: 100%; height: 250px; display: flex; align-items: flex-end; justify-content: center; padding-top: 20px;">
-                            <!-- SVG Chart injected by JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Users Section -->
-            <div id="section-users" class="dashboard-section" style="display: none;">
-                <div class="card">
-                    <div class="card-title">
-                        Registered Users
-                        <input type="text" placeholder="Search user..."
-                            style="background: transparent; border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 5px; color: #fff;">
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Username</th>
-                                    <th>Role</th>
-                                    <th>Email</th>
-                                    <th>Points</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- JS Populated -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Games Section -->
-            <div id="section-games" class="dashboard-section" style="display: none;">
-                <div class="card card-lg">
-                    <div class="card-title">Add New Game</div>
-                    <form onsubmit="event.preventDefault(); alert('Game Added!');">
-                        <div class="input-group" style="margin-bottom: 15px;">
-                            <label>Game Title</label>
-                            <input type="text" class="input-field" placeholder="Enter game title">
-                        </div>
-                        <div class="input-group" style="margin-bottom: 15px;">
-                            <label>Description</label>
-                            <textarea class="input-field" placeholder="Game description"></textarea>
-                        </div>
-                        <button class="btn btn-primary">Add Game</button>
-                    </form>
-                </div>
-            </div>
-
-        </main>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
     </div>
 
-    <!-- Toast -->
+    <!-- Header section -->
+    <header class="header-section">
+        <div class="container">
+            <!-- logo -->
+            <a class="site-logo" href="admin.html" style="font-size: 26px; font-weight: 800; color: #fff; text-decoration: none;">
+                <span style="color: var(--secondary-gw);"><i class="fa fa-shield"></i> ADMIN</span>PANEL
+            </a>
+            
+            <div class="user-panel" style="background: var(--secondary-gw);">
+                <a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</a>
+            </div>
+
+            <!-- responsive menu toggle -->
+            <div class="nav-switch">
+                <i class="fa fa-bars"></i>
+            </div>
+            
+            <!-- site menu -->
+            <nav class="main-menu">
+                <ul>
+                    <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="#" class="active" onclick="switchAdminTab('overview')">Overview</a></li>
+                    <li><a href="#" onclick="switchAdminTab('users')">Users</a></li>
+                    <li><a href="#" onclick="switchAdminTab('games')">Games</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- Header section end -->
+
+    <!-- Dashboard Content Wrap -->
+    <section class="dashboard-wrap">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar Column -->
+                <div class="col-lg-3">
+                    <div class="dashboard-sidebar wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="user-profile-header">
+                            <div class="user-avatar-gw" id="userAvatar" style="background: var(--secondary-gw);">A</div>
+                            <h4 id="userNameDisplay">Admin</h4>
+                            <p style="color: var(--secondary-gw);">Superuser Privilege</p>
+                        </div>
+                        <ul class="dashboard-menu">
+                            <li><a href="#" id="menu-overview" class="active" onclick="switchAdminTab('overview')"><i class="fa fa-dashboard"></i> Overview</a></li>
+                            <li><a href="#" id="menu-users" onclick="switchAdminTab('users')"><i class="fa fa-users"></i> User Accounts</a></li>
+                            <li><a href="#" id="menu-games" onclick="switchAdminTab('games')"><i class="fa fa-tasks"></i> Manage Games</a></li>
+                            <li><a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Sign Out</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Main Content Column -->
+                <div class="col-lg-9">
+                    <!-- Heading -->
+                    <div class="panel-gw mb-4 d-flex justify-content-between align-items-center flex-wrap wow fadeInUp" data-wow-delay="0.1s" style="padding: 20px 35px;">
+                        <div>
+                            <h2 id="pageTitle" style="color: #fff; font-weight: 800; text-transform: uppercase; margin: 0; font-size: 28px;">Admin Overview</h2>
+                            <p style="margin: 0; color: var(--secondary-gw); font-weight: 500;">Dynamic Admin Control Center</p>
+                        </div>
+                    </div>
+
+                    <!-- Metrics row -->
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="metric-card">
+                                <div class="ti-notic" style="background: var(--secondary-gw);">Registered Players</div>
+                                <h3 id="adminTotalUsers">0</h3>
+                                <p>Profiles in DB</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="metric-card">
+                                <div class="ti-notic" style="background: var(--secondary-gw);">Simulated Active</div>
+                                <h3 id="adminActiveUsers">0</h3>
+                                <p>Current Session</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 wow fadeInUp" data-wow-delay="0.4s">
+                            <div class="metric-card">
+                                <div class="ti-notic" style="background: var(--secondary-gw);">Total Distributed</div>
+                                <h3 id="adminTotalPoints">0</h3>
+                                <p>PlayPoints</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TAB: OVERVIEW -->
+                    <!-- ========================================== -->
+                    <div id="section-overview" class="dashboard-section">
+                        <div class="row">
+                            <!-- Growth chart -->
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw">
+                                    <div class="panel-title-gw">
+                                        <span><i class="fa fa-line-chart"></i> User Growth Analytics</span>
+                                    </div>
+                                    <div class="chart-wrap" id="adminChartContainer">
+                                        <!-- Dynamic JS SVG chart -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TAB: USERS -->
+                    <!-- ========================================== -->
+                    <div id="section-users" class="dashboard-section" style="display: none;">
+                        <div class="row">
+                            <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw">
+                                    <div class="panel-title-gw d-flex justify-content-between align-items-center">
+                                        <span><i class="fa fa-users"></i> Registered Accounts</span>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-gw">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Username</th>
+                                                    <th>Role</th>
+                                                    <th>Email</th>
+                                                    <th>Points</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Dynamic JS populated -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- TAB: GAMES -->
+                    <!-- ========================================== -->
+                    <div id="section-games" class="dashboard-section" style="display: none;">
+                        <div class="row text-center justify-content-center">
+                            <div class="col-md-8 wow fadeInUp" data-wow-delay="0.1s">
+                                <div class="panel-gw text-left" style="text-align: left;">
+                                    <div class="panel-title-gw">
+                                        <span><i class="fa fa-tasks"></i> Add New Arena Game</span>
+                                    </div>
+                                    <form onsubmit="event.preventDefault(); alert('Game created successfully!');">
+                                        <div class="input-group-gw">
+                                            <label>Game Title</label>
+                                            <input type="text" placeholder="Enter game title" required style="background: #252525; border: 1px solid #4a4a4a; color: #fff; padding: 12px 18px; width: 100%; margin-bottom: 20px; border-radius: 0;">
+                                        </div>
+                                        <div class="input-group-gw">
+                                            <label>Description</label>
+                                            <textarea placeholder="Game description" required style="background: #252525; border: 1px solid #4a4a4a; color: #fff; padding: 12px 18px; width: 100%; margin-bottom: 20px; border-radius: 0; min-height: 120px;"></textarea>
+                                        </div>
+                                        <button class="site-btn" style="border-radius: 4px; font-weight: bold; width: 100%;">Create Game Arena</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer section -->
+    <footer class="footer-section">
+        <div class="container text-center">
+            <p class="copyright" style="margin-bottom: 0;">
+                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | PlayPoints Esports
+            </p>
+        </div>
+    </footer>
+    <!-- Footer section end -->
+
+    <!-- Toast Notification -->
     <div id="toast" class="toast">
-        <i class='bx bx-info-circle'></i>
-        <span id="toastMsg">Notification</span>
+        <i class="fa fa-info-circle"></i>
+        <span id="toastMsg">Notification Message</span>
     </div>
 
+    <!-- Javascript Assets -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.marquee.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- Firebase Dynamic Admin Logic -->
     <script type="module" src="js/admin.js"></script>
 </body>
 

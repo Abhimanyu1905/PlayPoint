@@ -1,98 +1,587 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PlayPoints | The Ultimate Gaming Reward Platform</title>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="./css/style.css?v=2.0" type="text/css">
-
-    <!-- Icons -->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
-    <!-- Meta -->
-    <meta name="description"
-        content="Join PlayPoints to track your gaming stats, earn rewards, and climb the leaderboard.">
+    <meta name="description" content="Join PlayPoints to track your gaming stats, earn rewards, and climb the leaderboard.">
+    <link href="img/favicon.ico" rel="shortcut icon"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,500,500i,700,700i" rel="stylesheet">
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="css/owl.carousel.css"/>
+    <link rel="stylesheet" href="css/animate.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/playpoints-theme.css"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
-
 <body>
+    <!-- Page Preloader -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
 
-    <div class="bg-grid"></div>
-
-    <div class="landing-wrap">
-        <div class="auth-container glass-panel animate-float">
-            <div class="logo-large text-gradient">
-                <i class='bx bxs-joystick'></i> PlayPoints
+    <!-- Header section -->
+    <header class="header-section">
+        <div class="container">
+            <a class="site-logo" href="index.html" style="font-size:26px;font-weight:800;color:#fff;text-decoration:none;">
+                <span style="color:#ffb320;"><i class="fa fa-gamepad"></i> PLAY</span>POINTS
+            </a>
+            <div class="user-panel" id="headerUserPanel">
+                <a href="#" id="headerLoginBtn">Login</a> &nbsp;/&nbsp; <a href="#" id="headerRegisterBtn">Register</a>
             </div>
+            <div class="nav-switch">
+                <i class="fa fa-bars"></i>
+            </div>
+            <nav class="main-menu">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#games-section">Games</a></li>
+                    <li><a href="#leaderboard-section">Leaderboard</a></li>
+                    <li><a href="#tournaments-section">Tournaments</a></li>
+                    <li><a href="#about-section">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- Header section end -->
 
-            <p style="color: var(--text-gray); margin-bottom: 20px;">
-                Level up your gaming experience. <br> Track stats. Earn rewards.
-            </p>
-
-            <form id="loginForm" class="auth-form">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" class="input-field" placeholder="gamer@example.com" required>
+    <!-- Hero Slider -->
+    <section class="hero-section">
+        <div class="hero-slider owl-carousel">
+            <div class="hs-item set-bg" data-setbg="img/slider-1.jpg">
+                <div class="hs-text">
+                    <div class="container">
+                        <h2>Earn <span>Rewards</span> While You Play</h2>
+                        <p>Track your gaming stats, compete in tournaments, and climb the global leaderboard.<br>
+                        Every game you play earns you PlayPoints — redeem them for real rewards.</p>
+                        <a href="#" class="site-btn" id="heroJoinBtn">Join Now &nbsp;<i class="fa fa-arrow-right"></i></a>
+                    </div>
                 </div>
-
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+            </div>
+            <div class="hs-item set-bg" data-setbg="img/slider-2.jpg">
+                <div class="hs-text">
+                    <div class="container">
+                        <h2>Compete. <span>Level Up.</span> Dominate.</h2>
+                        <p>Challenge players worldwide, unlock exclusive rank badges, and prove you're the best.<br>
+                        PlayPoints turns every session into a chance to win big.</p>
+                        <a href="#" class="site-btn" id="heroLeaderBtn">View Leaderboard &nbsp;<i class="fa fa-trophy"></i></a>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Slider end -->
 
-                <button type="submit" class="btn btn-primary">
-                    Start Playing <i class='bx bx-right-arrow-alt'></i>
-                </button>
-            </form>
-
-            <form id="signupForm" class="auth-form" style="display: none;">
-                <div class="input-group">
-                    <label for="new-username">Username</label>
-                    <input type="text" id="new-username" class="input-field" placeholder="ProGamer123" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="new-email">Email Address</label>
-                    <input type="email" id="new-email" class="input-field" placeholder="gamer@example.com" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="new-password">Password</label>
-                    <input type="password" id="new-password" class="input-field" placeholder="Create a strong password"
-                        required>
-                </div>
-
-                <div class="input-group">
-                    <label for="role-select">Select Role (Demo Purpose)</label>
-                    <select id="role-select" class="input-field" style="background: rgba(0,0,0,0.5);">
-                        <option value="user">Player</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    Create Account <i class='bx bx-user-plus'></i>
-                </button>
-            </form>
-
-            <div class="auth-switch">
-                <p id="toSignupText">New here? <a href="#" id="toSignup">Create an account</a></p>
-                <p id="toLoginText" style="display: none;">Already have an account? <a href="#" id="toLogin">Login</a>
-                </p>
+    <!-- Live News Ticker -->
+    <div class="latest-news-section">
+        <div class="ln-title"><i class="fa fa-bolt"></i> Live Updates</div>
+        <div class="news-ticker">
+            <div class="news-ticker-contant">
+                <div class="nt-item"><span class="new">new</span>PlayPoints Season 3 Tournament is now LIVE — Register before June 30!</div>
+                <div class="nt-item"><span class="strategy">reward</span>Top 10 players this week earn double PlayPoints on all games.</div>
+                <div class="nt-item"><span class="racing">event</span>Neon Snake Arcade high score challenge — Beat 500 to earn Gold rank!</div>
+                <div class="nt-item"><span class="new">update</span>New arena game "Cyber Racer" launching next week — stay tuned.</div>
             </div>
         </div>
     </div>
+    <!-- News Ticker end -->
+
+    <!-- Features / How It Works -->
+    <section class="feature-section spad" id="about-section">
+        <div class="container">
+            <div class="section-title">
+                <div class="cata new">Platform</div>
+                <h2>How PlayPoints Works</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 p-0">
+                    <div class="feature-item set-bg" data-setbg="img/features/1.jpg">
+                        <span class="cata new">Step 1</span>
+                        <div class="fi-content text-white">
+                            <h5><a href="#">Create Your Gamer Profile</a></h5>
+                            <p>Sign up in seconds and set your gamer tag. Your journey to the top starts here.</p>
+                            <a href="#" class="fi-comment site-btn-link">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 p-0">
+                    <div class="feature-item set-bg" data-setbg="img/features/2.jpg">
+                        <span class="cata strategy">Step 2</span>
+                        <div class="fi-content text-white">
+                            <h5><a href="#">Play Arena Games</a></h5>
+                            <p>Jump into our arcade games and earn PlayPoints for every score you rack up.</p>
+                            <a href="#" class="fi-comment site-btn-link">Browse Games</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 p-0">
+                    <div class="feature-item set-bg" data-setbg="img/features/3.jpg">
+                        <span class="cata new">Step 3</span>
+                        <div class="fi-content text-white">
+                            <h5><a href="#">Climb the Leaderboard</a></h5>
+                            <p>Compete globally, unlock rank badges from Bronze to Legend, and dominate the charts.</p>
+                            <a href="#" class="fi-comment site-btn-link">See Rankings</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 p-0">
+                    <div class="feature-item set-bg" data-setbg="img/features/4.jpg">
+                        <span class="cata racing">Step 4</span>
+                        <div class="fi-content text-white">
+                            <h5><a href="#">Redeem Your Rewards</a></h5>
+                            <p>Cash out your PlayPoints for exclusive prizes, in-game items, and real-world rewards.</p>
+                            <a href="#" class="fi-comment site-btn-link">Rewards Store</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Features end -->
+
+    <!-- Games Section -->
+    <section class="recent-game-section spad set-bg" data-setbg="img/recent-game-bg.png" id="games-section">
+        <div class="container">
+            <div class="section-title">
+                <div class="cata new">Arena</div>
+                <h2>Featured Games</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="recent-game-item">
+                        <div class="rgi-thumb set-bg" data-setbg="img/recent-game/1.jpg">
+                            <div class="cata new">Live</div>
+                        </div>
+                        <div class="rgi-content">
+                            <h5>Neon Snake Arcade</h5>
+                            <p>The classic snake game reimagined in a neon cyber grid. Earn PlayPoints for every food you collect.</p>
+                            <a href="#" class="comment pp-play-link"><i class="fa fa-play-circle"></i> Play Now</a>
+                            <div class="rgi-extra">
+                                <div class="rgi-star"><img src="img/icons/star.png" alt=""></div>
+                                <div class="rgi-heart"><img src="img/icons/heart.png" alt=""></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="recent-game-item">
+                        <div class="rgi-thumb set-bg" data-setbg="img/recent-game/2.jpg">
+                            <div class="cata racing">Coming Soon</div>
+                        </div>
+                        <div class="rgi-content">
+                            <h5>Cyber Racer</h5>
+                            <p>High-speed futuristic racing inside a synthwave neon skyline. Compete for the fastest lap time.</p>
+                            <a href="#" class="comment"><i class="fa fa-clock-o"></i> Launching Soon</a>
+                            <div class="rgi-extra">
+                                <div class="rgi-star"><img src="img/icons/star.png" alt=""></div>
+                                <div class="rgi-heart"><img src="img/icons/heart.png" alt=""></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="recent-game-item">
+                        <div class="rgi-thumb set-bg" data-setbg="img/recent-game/3.jpg">
+                            <div class="cata adventure">Coming Soon</div>
+                        </div>
+                        <div class="rgi-content">
+                            <h5>Space Odyssey</h5>
+                            <p>Epic retro-galactic shooter with rogue alien spacecrafts. Survive the longest to earn max points.</p>
+                            <a href="#" class="comment"><i class="fa fa-clock-o"></i> Launching Soon</a>
+                            <div class="rgi-extra">
+                                <div class="rgi-star"><img src="img/icons/star.png" alt=""></div>
+                                <div class="rgi-heart"><img src="img/icons/heart.png" alt=""></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" style="margin-top:50px;">
+                <a href="#" class="site-btn pp-play-link"><i class="fa fa-gamepad"></i> &nbsp;Play Now — It's Free</a>
+            </div>
+        </div>
+    </section>
+    <!-- Games Section end -->
+
+    <!-- Tournaments Section -->
+    <section class="tournaments-section spad" id="tournaments-section">
+        <div class="container">
+            <div class="tournament-title"><i class="fa fa-trophy"></i> &nbsp;Active Tournaments</div>
+            <div class="row" style="margin-top:30px;">
+                <div class="col-md-6">
+                    <div class="tournament-item mb-4 mb-lg-0">
+                        <div class="ti-notic">Season 3 — Premium Tournament</div>
+                        <div class="ti-content">
+                            <div class="ti-thumb set-bg" data-setbg="img/tournament/1.jpg"></div>
+                            <div class="ti-text">
+                                <h4>Neon Snake Championship</h4>
+                                <ul>
+                                    <li><span>Tournament Begins:</span> June 20, 2026</li>
+                                    <li><span>Tournament Ends:</span> July 01, 2026</li>
+                                    <li><span>Participants:</span> Open to all players</li>
+                                    <li><span>Hosted by:</span> PlayPoints Admin</li>
+                                </ul>
+                                <p><span>Prizes:</span> 1st place 5000 pts, 2nd place: 2500 pts, 3rd place: 1000 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="tournament-item">
+                        <div class="ti-notic">Season 3 — Open Tournament</div>
+                        <div class="ti-content">
+                            <div class="ti-thumb set-bg" data-setbg="img/tournament/2.jpg"></div>
+                            <div class="ti-text">
+                                <h4>Cyber Racer Grand Prix</h4>
+                                <ul>
+                                    <li><span>Tournament Begins:</span> July 05, 2026</li>
+                                    <li><span>Tournament Ends:</span> July 20, 2026</li>
+                                    <li><span>Participants:</span> Top 50 ranked players</li>
+                                    <li><span>Hosted by:</span> PlayPoints Admin</li>
+                                </ul>
+                                <p><span>Prizes:</span> 1st place 10000 pts, 2nd place: 5000 pts, 3rd place: 2000 pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Tournaments end -->
+
+    <!-- Leaderboard Preview Section -->
+    <section class="review-section spad set-bg" data-setbg="img/review-bg.png" id="leaderboard-section">
+        <div class="container">
+            <div class="section-title">
+                <div class="cata new">Rankings</div>
+                <h2>Top Players This Week</h2>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="review-item">
+                        <div class="review-cover set-bg" data-setbg="img/review/1.jpg">
+                            <div class="score yellow">#1</div>
+                        </div>
+                        <div class="review-text">
+                            <h5>ProGamer_X</h5>
+                            <p>12,450 PlayPoints &bull; Legend Rank</p>
+                            <div class="rating">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="review-item">
+                        <div class="review-cover set-bg" data-setbg="img/review/2.jpg">
+                            <div class="score purple">#2</div>
+                        </div>
+                        <div class="review-text">
+                            <h5>NeonBlade99</h5>
+                            <p>9,870 PlayPoints &bull; Diamond Rank</p>
+                            <div class="rating">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i><i class="fa fa-star-half-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="review-item">
+                        <div class="review-cover set-bg" data-setbg="img/review/3.jpg">
+                            <div class="score green">#3</div>
+                        </div>
+                        <div class="review-text">
+                            <h5>CyberAce_Z</h5>
+                            <p>7,320 PlayPoints &bull; Gold Rank</p>
+                            <div class="rating">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i><i class="fa fa-star-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="review-item">
+                        <div class="review-cover set-bg" data-setbg="img/review/4.jpg">
+                            <div class="score pink">#4</div>
+                        </div>
+                        <div class="review-text">
+                            <h5>SnakeKing_7</h5>
+                            <p>5,100 PlayPoints &bull; Gold Rank</p>
+                            <div class="rating">
+                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i><i class="fa fa-star-o"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" style="margin-top:50px;">
+                <a href="#" class="site-btn pp-play-link"><i class="fa fa-list-ol"></i> &nbsp;View Full Leaderboard</a>
+            </div>
+        </div>
+    </section>
+    <!-- Leaderboard Preview end -->
+
+    <!-- Stats / CTA Banner -->
+    <section class="pp-stats-section spad">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="pp-stat-item">
+                        <i class="fa fa-users pp-stat-icon"></i>
+                        <h3>10,000+</h3>
+                        <p>Registered Players</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pp-stat-item">
+                        <i class="fa fa-gamepad pp-stat-icon"></i>
+                        <h3>50,000+</h3>
+                        <p>Games Played</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pp-stat-item">
+                        <i class="fa fa-trophy pp-stat-icon"></i>
+                        <h3>500+</h3>
+                        <p>Tournaments Hosted</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="pp-stat-item">
+                        <i class="fa fa-database pp-stat-icon"></i>
+                        <h3>2M+</h3>
+                        <p>PlayPoints Distributed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Stats end -->
+
+    <!-- Footer Top -->
+    <section class="footer-top-section">
+        <div class="container">
+            <div class="footer-top-bg">
+                <img src="img/footer-top-bg.png" alt="">
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="footer-logo text-white">
+                        <p style="font-size:28px;font-weight:800;margin-bottom:15px;">
+                            <span style="color:#ffb320;"><i class="fa fa-gamepad"></i> PLAY</span>POINTS
+                        </p>
+                        <p>The ultimate gaming reward platform. Play games, earn points, and climb the global leaderboard. Every session counts.</p>
+                        <div style="margin-top:20px;">
+                            <a href="#" style="color:#ffb320;font-size:20px;margin-right:15px;"><i class="fa fa-twitter"></i></a>
+                            <a href="#" style="color:#ffb320;font-size:20px;margin-right:15px;"><i class="fa fa-facebook"></i></a>
+                            <a href="#" style="color:#ffb320;font-size:20px;margin-right:15px;"><i class="fa fa-discord"></i></a>
+                            <a href="#" style="color:#ffb320;font-size:20px;"><i class="fa fa-youtube-play"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-widget mb-5 mb-md-0">
+                        <h4 class="fw-title">Quick Links</h4>
+                        <ul style="list-style:none;">
+                            <li style="margin-bottom:12px;"><a href="index.html" style="color:#d3d3d3;font-size:14px;"><i class="fa fa-angle-right" style="color:#ffb320;margin-right:8px;"></i>Home</a></li>
+                            <li style="margin-bottom:12px;"><a href="#games-section" style="color:#d3d3d3;font-size:14px;"><i class="fa fa-angle-right" style="color:#ffb320;margin-right:8px;"></i>Games Arena</a></li>
+                            <li style="margin-bottom:12px;"><a href="#leaderboard-section" style="color:#d3d3d3;font-size:14px;"><i class="fa fa-angle-right" style="color:#ffb320;margin-right:8px;"></i>Leaderboard</a></li>
+                            <li style="margin-bottom:12px;"><a href="#tournaments-section" style="color:#d3d3d3;font-size:14px;"><i class="fa fa-angle-right" style="color:#ffb320;margin-right:8px;"></i>Tournaments</a></li>
+                            <li style="margin-bottom:12px;"><a href="#" class="pp-play-link" style="color:#d3d3d3;font-size:14px;"><i class="fa fa-angle-right" style="color:#ffb320;margin-right:8px;"></i>My Dashboard</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-widget">
+                        <h4 class="fw-title">Rank System</h4>
+                        <div class="top-comment">
+                            <div class="tc-item">
+                                <div class="tc-thumb" style="background:#cd7f32;border-radius:50%;width:40px;height:40px;float:left;display:flex;align-items:center;justify-content:center;"><i class="fa fa-shield" style="color:#fff;"></i></div>
+                                <div class="tc-content"><p style="color:#d3d3d3;">Bronze Rank</p><div class="tc-date">0 – 499 PlayPoints</div></div>
+                            </div>
+                            <div class="tc-item">
+                                <div class="tc-thumb" style="background:#aaa;border-radius:50%;width:40px;height:40px;float:left;display:flex;align-items:center;justify-content:center;"><i class="fa fa-shield" style="color:#fff;"></i></div>
+                                <div class="tc-content"><p style="color:#d3d3d3;">Silver Rank</p><div class="tc-date">500 – 1,999 PlayPoints</div></div>
+                            </div>
+                            <div class="tc-item">
+                                <div class="tc-thumb" style="background:#ffb320;border-radius:50%;width:40px;height:40px;float:left;display:flex;align-items:center;justify-content:center;"><i class="fa fa-shield" style="color:#131313;"></i></div>
+                                <div class="tc-content"><p style="color:#d3d3d3;">Gold Rank</p><div class="tc-date">2,000 – 4,999 PlayPoints</div></div>
+                            </div>
+                            <div class="tc-item">
+                                <div class="tc-thumb" style="background:#694eae;border-radius:50%;width:40px;height:40px;float:left;display:flex;align-items:center;justify-content:center;"><i class="fa fa-diamond" style="color:#fff;"></i></div>
+                                <div class="tc-content"><p style="color:#d3d3d3;">Diamond Rank</p><div class="tc-date">5,000 – 9,999 PlayPoints</div></div>
+                            </div>
+                            <div class="tc-item">
+                                <div class="tc-thumb" style="background:#ff205f;border-radius:50%;width:40px;height:40px;float:left;display:flex;align-items:center;justify-content:center;"><i class="fa fa-star" style="color:#fff;"></i></div>
+                                <div class="tc-content"><p style="color:#d3d3d3;">Legend Rank</p><div class="tc-date">10,000+ PlayPoints</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer Top end -->
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <ul class="footer-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#games-section">Games</a></li>
+                <li><a href="#leaderboard-section">Leaderboard</a></li>
+                <li><a href="#tournaments-section">Tournaments</a></li>
+                <li><a href="#" class="pp-play-link">Dashboard</a></li>
+            </ul>
+            <p class="copyright">
+                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | PlayPoints Esports
+            </p>
+        </div>
+    </footer>
+    <!-- Footer end -->
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="pp-modal-overlay" style="display:none;">
+        <div class="pp-modal-box">
+            <button class="pp-modal-close" id="closeModal"><i class="fa fa-times"></i></button>
+
+            <!-- Login Form -->
+            <div id="modalLoginForm">
+                <div class="text-center mb-4">
+                    <h2 style="font-size:30px;font-weight:800;color:#fff;margin-bottom:5px;">
+                        <span style="color:#ffb320;"><i class="fa fa-trophy"></i> LEVEL</span> UP
+                    </h2>
+                    <p style="color:#878787;font-size:14px;">Track stats. Earn rewards. Beat the highscore.</p>
+                </div>
+                <form id="loginForm">
+                    <div class="input-group-gw">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="gamer@example.com" required>
+                    </div>
+                    <div class="input-group-gw">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="site-btn" style="border-radius:4px;font-weight:bold;width:100%;">
+                        Start Playing &nbsp;<i class="fa fa-arrow-right"></i>
+                    </button>
+                </form>
+                <div class="auth-switch">
+                    <p>New here? <a href="#" id="toSignup">Create an account</a></p>
+                </div>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="modalSignupForm" style="display:none;">
+                <div class="text-center mb-4">
+                    <h2 style="font-size:30px;font-weight:800;color:#fff;margin-bottom:5px;">
+                        <span style="color:#ffb320;"><i class="fa fa-user-plus"></i> JOIN</span> THE ARENA
+                    </h2>
+                    <p style="color:#878787;font-size:14px;">Create your free account and start earning today.</p>
+                </div>
+                <form id="signupForm">
+                    <div class="input-group-gw">
+                        <label for="new-username">Username</label>
+                        <input type="text" id="new-username" placeholder="ProGamer123" required>
+                    </div>
+                    <div class="input-group-gw">
+                        <label for="new-email">Email Address</label>
+                        <input type="email" id="new-email" placeholder="gamer@example.com" required>
+                    </div>
+                    <div class="input-group-gw">
+                        <label for="new-password">Password</label>
+                        <input type="password" id="new-password" placeholder="Create a strong password" required>
+                    </div>
+                    <div class="input-group-gw">
+                        <label for="role-select">Account Type</label>
+                        <select id="role-select">
+                            <option value="user">Player</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="site-btn" style="border-radius:4px;font-weight:bold;width:100%;">
+                        Create Account &nbsp;<i class="fa fa-user-plus"></i>
+                    </button>
+                </form>
+                <div class="auth-switch">
+                    <p>Already have an account? <a href="#" id="toLogin">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Auth Modal end -->
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">
-        <i class='bx bx-info-circle'></i>
-        <span id="toastMsg">Notification</span>
+        <i class="fa fa-info-circle"></i>
+        <span id="toastMsg">Notification Message</span>
     </div>
 
+    <!-- Scripts -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.marquee.min.js"></script>
+    <script src="js/main.js"></script>
     <script type="module" src="js/auth.js"></script>
 
+    <script>
+        // Modal open/close
+        function openModal(showSignup) {
+            document.getElementById('authModal').style.display = 'flex';
+            if (showSignup) {
+                document.getElementById('modalLoginForm').style.display = 'none';
+                document.getElementById('modalSignupForm').style.display = 'block';
+            } else {
+                document.getElementById('modalLoginForm').style.display = 'block';
+                document.getElementById('modalSignupForm').style.display = 'none';
+            }
+        }
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('authModal').style.display = 'none';
+        });
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+        document.getElementById('headerLoginBtn').addEventListener('click', function(e) {
+            e.preventDefault(); openModal(false);
+        });
+        document.getElementById('headerRegisterBtn').addEventListener('click', function(e) {
+            e.preventDefault(); openModal(true);
+        });
+        document.getElementById('heroJoinBtn').addEventListener('click', function(e) {
+            e.preventDefault(); openModal(true);
+        });
+        document.getElementById('heroLeaderBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('leaderboard-section').scrollIntoView({behavior:'smooth'});
+        });
+        document.getElementById('toSignup').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('modalLoginForm').style.display = 'none';
+            document.getElementById('modalSignupForm').style.display = 'block';
+        });
+        document.getElementById('toLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('modalSignupForm').style.display = 'none';
+            document.getElementById('modalLoginForm').style.display = 'block';
+        });
+        // All "play now" / dashboard links open login modal
+        document.querySelectorAll('.pp-play-link').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+                e.preventDefault(); openModal(false);
+            });
+        });
+    </script>
 </body>
-
 </html>

@@ -1,0 +1,540 @@
+/* 
+====================================================================
+   PLAYPOINTS - GAME WARRIOR INTEGRATION STYLES
+====================================================================
+*/
+
+/* Core Theme Settings & Overrides */
+:root {
+    --primary-gw: #ffb320; /* Gold */
+    --secondary-gw: #ff205f; /* Crimson Red */
+    --bg-dark-gw: #131313;
+    --bg-card-gw: #1c1c1c;
+    --border-gw: #333;
+}
+
+/* Authentication Box styling */
+.auth-wrap {
+    padding: 100px 0;
+    background-image: url("../img/pattern.png");
+    background-repeat: repeat;
+    min-height: calc(100vh - 180px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-box {
+    background: var(--bg-card-gw);
+    border: 2px solid var(--primary-gw);
+    padding: 45px;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(255, 179, 32, 0.15);
+    width: 100%;
+    max-width: 500px;
+}
+
+.auth-box h3 {
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+}
+
+.auth-box label {
+    font-size: 13px;
+    color: #a0a0b0;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.auth-box input, .auth-box select {
+    background: #252525 !important;
+    border: 1px solid #4a4a4a !important;
+    color: #fff !important;
+    padding: 12px 18px !important;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 0 !important;
+    font-size: 14px;
+}
+
+.auth-box input:focus, .auth-box select:focus {
+    border-color: var(--primary-gw) !important;
+    outline: none;
+}
+
+.auth-switch {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #a0a0b0;
+    text-align: center;
+}
+
+.auth-switch a {
+    color: var(--primary-gw);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--bg-dark-gw);
+    border: 2px solid var(--primary-gw);
+    color: #fff;
+    padding: 16px 28px;
+    z-index: 99999;
+    display: none;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast i {
+    color: var(--primary-gw);
+    font-size: 1.2rem;
+}
+
+.toast.show {
+    display: flex !important;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+/* Dashboard Sidebar & Tabs Layout */
+.dashboard-wrap {
+    background-image: url("../img/pattern.png");
+    background-repeat: repeat;
+    min-height: calc(100vh - 180px);
+    padding: 60px 0;
+}
+
+.dashboard-sidebar {
+    background: var(--bg-card-gw);
+    border: 1px solid var(--border-gw);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.user-profile-header {
+    text-align: center;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-gw);
+    margin-bottom: 25px;
+}
+
+.user-avatar-gw {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary-gw);
+    color: #131313;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 auto 15px;
+    border: 3px solid #fff;
+}
+
+.user-profile-header h4 {
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.user-profile-header p {
+    margin-bottom: 0;
+    color: var(--primary-gw);
+    font-weight: 500;
+}
+
+.dashboard-menu {
+    list-style: none;
+}
+
+.dashboard-menu li {
+    margin-bottom: 10px;
+}
+
+.dashboard-menu li a {
+    display: block;
+    padding: 12px 20px;
+    background: #252525;
+    color: #fff;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboard-menu li a:hover, .dashboard-menu li a.active {
+    background: var(--primary-gw);
+    color: #131313;
+    border-left: 3px solid var(--secondary-gw);
+}
+
+/* Card Metrics */
+.metric-card {
+    background: var(--bg-card-gw);
+    border: 1px solid var(--border-gw);
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.metric-card .ti-notic {
+    display: inline-block;
+    padding: 6px 15px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #131313;
+    text-transform: uppercase;
+    background: var(--primary-gw);
+    margin-bottom: 15px;
+}
+
+.metric-card h3 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.metric-card p {
+    margin-bottom: 0;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #a0a0b0;
+    letter-spacing: 1px;
+}
+
+/* Sections & Panels */
+.panel-gw {
+    background: var(--bg-card-gw);
+    border: 1px solid var(--border-gw);
+    padding: 35px;
+    margin-bottom: 30px;
+}
+
+.panel-title-gw {
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--primary-gw);
+    padding-bottom: 12px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Game Warrior Styled Tables */
+.table-gw {
+    width: 100%;
+    margin-bottom: 0;
+    background: transparent !important;
+    border-collapse: collapse;
+}
+
+.table-gw th {
+    background: var(--primary-gw) !important;
+    color: #131313 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    border: none !important;
+    padding: 12px 18px !important;
+}
+
+.table-gw td {
+    color: #fff !important;
+    border-top: 1px solid var(--border-gw) !important;
+    padding: 15px 18px !important;
+    font-size: 14px;
+    vertical-align: middle !important;
+}
+
+.table-gw tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.table-gw tr.highlight-row td {
+    background: rgba(255, 179, 32, 0.1) !important;
+    border-left: 3px solid var(--primary-gw);
+}
+
+/* Game Grid styling */
+.game-card-gw {
+    background: var(--bg-card-gw);
+    border: 1px solid var(--border-gw);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.game-card-thumb {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.game-card-body {
+    padding: 25px;
+    text-align: center;
+}
+
+.game-card-body h5 {
+    color: #fff;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.game-card-body p {
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+/* Snake Game Container */
+.snake-game-wrapper {
+    text-align: center;
+    background: #000;
+    border: 2px solid var(--primary-gw);
+    padding: 20px;
+    position: relative;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+#snakeCanvas {
+    display: block;
+    margin: 0 auto;
+    background: #0b0c15;
+    max-width: 100%;
+}
+
+.snake-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(19, 19, 19, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.snake-overlay h3 {
+    color: var(--primary-gw);
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.snake-overlay p {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+
+/* Leaderboard Rank Badges */
+.rank-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #131313;
+    font-size: 13px;
+}
+
+.rank-1 {
+    background: var(--primary-gw);
+}
+
+.rank-2 {
+    background: #dbe2ec;
+}
+
+.rank-3 {
+    background: #cd7f32;
+}
+
+/* SVG Chart adjustments */
+.chart-wrap {
+    height: 260px;
+    position: relative;
+    border: 1px solid var(--border-gw);
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+}
+
+
+/* ====================================================
+   PLAYPOINTS LANDING PAGE ADDITIONS
+   ==================================================== */
+
+/* Stats Section */
+.pp-stats-section {
+    background: #131313;
+    border-top: 3px solid #ffb320;
+    border-bottom: 3px solid #ffb320;
+}
+
+.pp-stat-item {
+    padding: 20px;
+}
+
+.pp-stat-icon {
+    font-size: 40px;
+    color: #ffb320;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.pp-stat-item h3 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.pp-stat-item p {
+    color: #878787;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+}
+
+/* Feature section link style */
+.fi-comment.site-btn-link {
+    color: #ffb320;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Auth Modal Overlay */
+.pp-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pp-modal-box {
+    background: #1c1c1c;
+    border: 2px solid #ffb320;
+    padding: 45px;
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(255, 179, 32, 0.2);
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.pp-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #878787;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.pp-modal-close:hover {
+    color: #ffb320;
+}
+
+.pp-modal-box label {
+    font-size: 13px;
+    color: #a0a0b0;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.pp-modal-box input,
+.pp-modal-box select {
+    background: #252525;
+    border: 1px solid #4a4a4a;
+    color: #fff;
+    padding: 12px 18px;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 0;
+    font-size: 14px;
+    display: block;
+}
+
+.pp-modal-box input:focus,
+.pp-modal-box select:focus {
+    border-color: #ffb320;
+    outline: none;
+}
+
+.input-group-gw {
+    margin-bottom: 5px;
+}
+
+/* Leaderboard preview rating */
+.review-item .rating {
+    margin-bottom: 10px;
+}
+
+/* Footer quick links hover */
+.footer-widget ul li a:hover {
+    color: #ffb320;
+}
+
+/* Responsive modal */
+@media only screen and (max-width: 576px) {
+    .pp-modal-box {
+        padding: 30px 20px;
+    }
+}

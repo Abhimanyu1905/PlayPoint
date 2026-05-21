@@ -19,34 +19,53 @@ import {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Elements
+    // Elements — use safe references (some may not exist on every page)
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
     const toSignup = document.getElementById('toSignup');
     const toLogin = document.getElementById('toLogin');
+    // Legacy inline-page toggle elements (index old layout)
     const toSignupText = document.getElementById('toSignupText');
     const toLoginText = document.getElementById('toLoginText');
+    // Modal wrapper elements (new landing page layout)
+    const modalLoginForm = document.getElementById('modalLoginForm');
+    const modalSignupForm = document.getElementById('modalSignupForm');
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
 
-    // Toggle Forms
-    toSignup.addEventListener('click', (e) => {
-        e.preventDefault();
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'flex';
-        toSignupText.style.display = 'none';
-        toLoginText.style.display = 'block';
-    });
+    // Toggle Forms — works for both modal and inline layouts
+    if (toSignup) {
+        toSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (modalLoginForm && modalSignupForm) {
+                modalLoginForm.style.display = 'none';
+                modalSignupForm.style.display = 'block';
+            } else {
+                if (loginForm) loginForm.style.display = 'none';
+                if (signupForm) signupForm.style.display = 'flex';
+                if (toSignupText) toSignupText.style.display = 'none';
+                if (toLoginText) toLoginText.style.display = 'block';
+            }
+        });
+    }
 
-    toLogin.addEventListener('click', (e) => {
-        e.preventDefault();
-        signupForm.style.display = 'none';
-        loginForm.style.display = 'flex';
-        toLoginText.style.display = 'none';
-        toSignupText.style.display = 'block';
-    });
+    if (toLogin) {
+        toLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (modalLoginForm && modalSignupForm) {
+                modalSignupForm.style.display = 'none';
+                modalLoginForm.style.display = 'block';
+            } else {
+                if (signupForm) signupForm.style.display = 'none';
+                if (loginForm) loginForm.style.display = 'flex';
+                if (toLoginText) toLoginText.style.display = 'none';
+                if (toSignupText) toSignupText.style.display = 'block';
+            }
+        });
+    }
 
     // Login
+    if (!loginForm) return;
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -136,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showToast(msg, type = 'info') {
         toastMsg.innerText = msg;
-        toast.style.borderColor = type === 'error' ? '#ff0055' : 'var(--primary)';
+        toast.style.borderColor = type === 'error' ? '#ff205f' : '#ffb320';
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
     }
