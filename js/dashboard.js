@@ -7,7 +7,7 @@
 ====================================================================
 */
 
-import { auth, db, storage } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import {
     onAuthStateChanged,
     signOut
@@ -27,11 +27,6 @@ import {
     onSnapshot,
     getCountFromServer
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import {
-    ref,
-    uploadBytesResumable,
-    getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 let currentUserData = null;
 let currentUserUid = null;
@@ -40,11 +35,11 @@ let currentUserUid = null;
    RANK SYSTEM (consistent across the whole app)
    ============================================================ */
 function getRankInfo(points) {
-    if (points >= 10000) return { name: 'Legend',   color: '#ff205f',  icon: '★' };
-    if (points >= 5000)  return { name: 'Diamond',  color: '#694eae',  icon: '◆' };
-    if (points >= 2000)  return { name: 'Gold',     color: '#ffb320',  icon: '⬡' };
-    if (points >= 500)   return { name: 'Silver',   color: '#aaaaaa',  icon: '⬡' };
-    return                      { name: 'Bronze',   color: '#cd7f32',  icon: '⬡' };
+    if (points >= 10000) return { name: 'Legend',   color: '#ff205f',  stars: 5 };
+    if (points >= 5000)  return { name: 'Diamond',  color: '#694eae',  stars: 4 };
+    if (points >= 2000)  return { name: 'Gold',     color: '#ffb320',  stars: 3 };
+    if (points >= 500)   return { name: 'Silver',   color: '#aaaaaa',  stars: 2 };
+    return                      { name: 'Bronze',   color: '#cd7f32',  stars: 1 };
 }
 
 /* ============================================================
@@ -146,7 +141,8 @@ function loadDashboardData() {
 }
 
 /* ============================================================
-   PROFILE PICTURE UPLOAD
+   PROFILE PICTURE UPLOAD — uses Firebase Storage REST API
+   with the user's auth token (bypasses SDK storage rules issues)
    ============================================================ */
 function setupAvatarUpload() {
     const input = document.getElementById('avatarFileInput');
@@ -156,51 +152,89 @@ function setupAvatarUpload() {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Validate: image, max 5MB
         if (!file.type.startsWith('image/')) { showToast('Please select an image file.', 'error'); return; }
         if (file.size > 5 * 1024 * 1024) { showToast('Image must be under 5MB.', 'error'); return; }
 
         const progressWrap = document.getElementById('avatarUploadProgress');
         const progressFill = document.getElementById('avatarProgressFill');
         if (progressWrap) progressWrap.style.display = 'block';
+        if (progressFill) progressFill.style.width = '10%';
 
         try {
-            const storageRef = ref(storage, `avatars/${currentUserUid}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+            // Get fresh ID token for authenticated upload
+            const idToken = await auth.currentUser.getIdToken(true);
+            const bucket = 'playpoints-89c84.firebasestorage.app';
+            const objectPath = encodeURIComponent(`avatars/${currentUserUid}`);
+            const uploadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?uploadType=media&name=avatars%2F${currentUserUid}`;
 
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    if (progressFill) progressFill.style.width = pct + '%';
+            if (progressFill) progressFill.style.width = '30%';
+
+            const response = await fetch(uploadURL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Firebase ${idToken}`,
+                    'Content-Type': file.type
                 },
-                (error) => {
-                    console.error('Upload error:', error);
-                    showToast('Upload failed: ' + error.message, 'error');
-                    if (progressWrap) progressWrap.style.display = 'none';
-                },
-                async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                body: file
+            });
 
-                    // Save to Firestore
-                    await updateDoc(doc(db, "users", currentUserUid), { photoURL: downloadURL });
-                    currentUserData.photoURL = downloadURL;
+            if (progressFill) progressFill.style.width = '80%';
 
-                    // Update avatar in UI
-                    setAvatarEl(document.getElementById('userAvatar'), downloadURL, currentUserData.username);
-
-                    if (progressWrap) progressWrap.style.display = 'none';
-                    showToast('Profile picture updated!', 'success');
-
-                    // Reset input so same file can be re-selected
-                    input.value = '';
+            if (!response.ok) {
+                const errText = await response.text();
+                console.error('Storage upload failed:', response.status, errText);
+                // Fallback: try with Bearer token
+                const response2 = await fetch(uploadURL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': file.type
+                    },
+                    body: file
+                });
+                if (!response2.ok) {
+                    const errText2 = await response2.text();
+                    throw new Error(`Upload failed (${response2.status}): ${errText2}`);
                 }
-            );
+                const data2 = await response2.json();
+                await finalizeUpload(data2, progressWrap, progressFill, input);
+                return;
+            }
+
+            const data = await response.json();
+            await finalizeUpload(data, progressWrap, progressFill, input);
+
         } catch (err) {
-            console.error(err);
-            showToast('Upload error: ' + err.message, 'error');
+            console.error('Upload error:', err);
+            showToast('Upload failed: ' + err.message, 'error');
             if (progressWrap) progressWrap.style.display = 'none';
+            input.value = '';
         }
     });
+}
+
+async function finalizeUpload(storageData, progressWrap, progressFill, input) {
+    // Build the public download URL from the storage response
+    const bucket = 'playpoints-89c84.firebasestorage.app';
+    const encodedName = encodeURIComponent(storageData.name || `avatars/${currentUserUid}`);
+    const downloadURL = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedName}?alt=media&token=${storageData.downloadTokens || ''}`;
+
+    if (progressFill) progressFill.style.width = '100%';
+
+    // Save to Firestore
+    await updateDoc(doc(db, "users", currentUserUid), { photoURL: downloadURL });
+    currentUserData.photoURL = downloadURL;
+
+    // Update avatar in UI immediately
+    setAvatarEl(document.getElementById('userAvatar'), downloadURL, currentUserData.username);
+
+    setTimeout(() => {
+        if (progressWrap) progressWrap.style.display = 'none';
+        if (progressFill) progressFill.style.width = '0%';
+    }, 600);
+
+    showToast('Profile picture updated!', 'success');
+    input.value = '';
 }
 
 /* ============================================================
@@ -244,13 +278,22 @@ function loadLeaderboard() {
                 const isCurrentUser = user.id === currentUserUid;
                 const avatarHTML = makeAvatarHTML(user.photoURL, user.username, 36);
 
+                // Stars based on rank
+                let starsHTML = '';
+                for (let s = 0; s < 5; s++) {
+                    starsHTML += `<i class="fa fa-${s < rankInfo.stars ? 'star' : 'star-o'}" style="color:#ffb320;font-size:11px;"></i>`;
+                }
+
                 const row = `
                     <tr class="${isCurrentUser ? 'highlight-row' : ''}">
                         <td style="text-align:center;">${rankBadge}</td>
                         <td>
                             <div style="display:flex;align-items:center;gap:10px;">
                                 ${avatarHTML}
-                                <span>${user.username}${isCurrentUser ? ' <span style="color:#ffb320;font-size:11px;">(You)</span>' : ''}</span>
+                                <div>
+                                    <div>${user.username}${isCurrentUser ? ' <span style="color:#ffb320;font-size:11px;">(You)</span>' : ''}</div>
+                                    <div style="margin-top:2px;">${starsHTML}</div>
+                                </div>
                             </div>
                         </td>
                         <td><span style="color:${rankInfo.color};font-weight:700;">${rankInfo.name}</span></td>
